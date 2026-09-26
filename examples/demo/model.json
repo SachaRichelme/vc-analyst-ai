@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "request": {
+    "schema_version": "1.0",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "1331519a-a379-5b92-9c44-0cc4d69bd845",
+      "company_id": null,
+      "mode": "demo",
+      "operation_key": "fixture-discovery"
+    },
+    "task": "classification",
+    "model": "fixture-classifier",
+    "model_revision": null,
+    "prompt_version": "1",
+    "output_schema_version": "1.0",
+    "input_text": "Synthetic B2B software company",
+    "max_output_tokens": 50
+  },
+  "status": "success",
+  "output_json": "{\"schema_version\":\"1.0\",\"kind\":\"text\",\"value\":\"B2B software\"}",
+  "reason": null
+}

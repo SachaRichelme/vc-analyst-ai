@@ -1,0 +1,197 @@
+{
+  "schema_version": "1.0",
+  "case_id": "refresh",
+  "mode": "demo",
+  "label": "DEMO — synthetic fixture, not live research",
+  "provenance": "Original synthetic developer fixture. No real company, collected webpage, or paid provider output.",
+  "license": "CC0-1.0",
+  "companies": [
+    {
+      "schema_version": "1.0",
+      "id": "149cd699-c6f3-57c5-93fd-e67aecfb91f2",
+      "mode": "demo",
+      "name": "Lumen Fixture Software",
+      "website": "https://lumen.example/",
+      "aliases": [],
+      "jurisdiction": null,
+      "first_seen_at": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "schema_version": "1.0",
+      "id": "d96b02a3-c4c3-578c-a0fd-e8b4784ab644",
+      "mode": "demo",
+      "url": "https://lumen.example/report-0",
+      "publisher": "Synthetic Lumen",
+      "source_type": "company",
+      "origin_group": null,
+      "retention": "full",
+      "model_processing_allowed": true,
+      "export_allowed": true,
+      "rights_basis": "Original synthetic test text, CC0-1.0"
+    }
+  ],
+  "versions": [
+    {
+      "schema_version": "1.0",
+      "id": "198ee438-aaab-5e6c-9dfc-dfd5e7858cb4",
+      "mode": "demo",
+      "source_id": "d96b02a3-c4c3-578c-a0fd-e8b4784ab644",
+      "title": "Synthetic annual report",
+      "content_hash": "a9556cdfe3ca9fe12a942ec9e349bbab6cdf9c29124994e601789cb7959b12dc",
+      "published_at": "2026-01-01T00:00:00Z",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "observed_at": null,
+      "last_checked_at": null,
+      "last_verified_at": null,
+      "expires_at": null,
+      "extractor_version": "fixture-1",
+      "previous_version_id": null
+    },
+    {
+      "schema_version": "1.0",
+      "id": "79485bcc-3b11-5209-987a-c316ab634867",
+      "mode": "demo",
+      "source_id": "d96b02a3-c4c3-578c-a0fd-e8b4784ab644",
+      "title": "Synthetic annual report",
+      "content_hash": "e99c9d0a3d84133b38afdd9bab3146547b187bbcbb8325c9b1cc96272c336077",
+      "published_at": "2026-09-26T00:00:00Z",
+      "retrieved_at": "2026-09-26T00:00:00Z",
+      "observed_at": null,
+      "last_checked_at": null,
+      "last_verified_at": null,
+      "expires_at": null,
+      "extractor_version": "fixture-1",
+      "previous_version_id": "198ee438-aaab-5e6c-9dfc-dfd5e7858cb4"
+    }
+  ],
+  "documents": [
+    {
+      "schema_version": "1.0",
+      "version_id": "198ee438-aaab-5e6c-9dfc-dfd5e7858cb4",
+      "text": "Lumen Fixture Software reports annual revenue of EUR 100 in 2025."
+    },
+    {
+      "schema_version": "1.0",
+      "version_id": "79485bcc-3b11-5209-987a-c316ab634867",
+      "text": "Lumen Fixture Software reports annual revenue of EUR 200 in 2026."
+    }
+  ],
+  "passages": [
+    {
+      "schema_version": "1.0",
+      "id": "27de1b5d-0e38-5107-809c-b44ad87d29f4",
+      "mode": "demo",
+      "source_version_id": "198ee438-aaab-5e6c-9dfc-dfd5e7858cb4",
+      "excerpt": "Lumen Fixture Software reports annual revenue of EUR 100 in 2025.",
+      "locator": "paragraph 1",
+      "extraction_version": "fixture-1"
+    },
+    {
+      "schema_version": "1.0",
+      "id": "05aefbcc-37ec-5e59-ba96-e98f33155f79",
+      "mode": "demo",
+      "source_version_id": "79485bcc-3b11-5209-987a-c316ab634867",
+      "excerpt": "Lumen Fixture Software reports annual revenue of EUR 200 in 2026.",
+      "locator": "paragraph 1",
+      "extraction_version": "fixture-1"
+    }
+  ],
+  "claims": [
+    {
+      "schema_version": "1.0",
+      "id": "78a38f8f-8759-5a84-a446-920224c468c9",
+      "mode": "demo",
+      "company_id": "149cd699-c6f3-57c5-93fd-e67aecfb91f2",
+      "predicate": "annual_revenue",
+      "value": {
+        "schema_version": "1.0",
+        "kind": "number",
+        "value": "100",
+        "unit": "money",
+        "currency": "EUR"
+      },
+      "statement_class": "COMPANY CLAIM",
+      "derivation": "reported",
+      "verification": "supported",
+      "as_of": "2026-01-01T00:00:00Z",
+      "observed_at": null,
+      "period_start": null,
+      "period_end": null,
+      "confidence_reasons": [
+        "Company-reported; not independently verified"
+      ],
+      "calculation_id": null,
+      "premise_claim_ids": [],
+      "rationale": null,
+      "supersedes_id": null
+    },
+    {
+      "schema_version": "1.0",
+      "id": "baf6ac17-00c0-5f79-a658-ca1f50dddcef",
+      "mode": "demo",
+      "company_id": "149cd699-c6f3-57c5-93fd-e67aecfb91f2",
+      "predicate": "annual_revenue",
+      "value": {
+        "schema_version": "1.0",
+        "kind": "number",
+        "value": "200",
+        "unit": "money",
+        "currency": "EUR"
+      },
+      "statement_class": "COMPANY CLAIM",
+      "derivation": "reported",
+      "verification": "supported",
+      "as_of": "2026-09-26T00:00:00Z",
+      "observed_at": null,
+      "period_start": null,
+      "period_end": null,
+      "confidence_reasons": [
+        "Company-reported; not independently verified"
+      ],
+      "calculation_id": null,
+      "premise_claim_ids": [],
+      "rationale": null,
+      "supersedes_id": "78a38f8f-8759-5a84-a446-920224c468c9"
+    }
+  ],
+  "links": [
+    {
+      "schema_version": "1.0",
+      "id": "661c4dbe-0bab-58af-bfd9-737c43746f7b",
+      "mode": "demo",
+      "claim_id": "78a38f8f-8759-5a84-a446-920224c468c9",
+      "passage_id": "27de1b5d-0e38-5107-809c-b44ad87d29f4",
+      "relationship": "supports",
+      "authority_for_claim": "Direct report of what the company claims",
+      "directness": "Explicit statement",
+      "independence": "shared_origin",
+      "reasoning": "Synthetic company report, no independent corroboration"
+    },
+    {
+      "schema_version": "1.0",
+      "id": "8187262f-329f-5d53-a610-a42b891cf4ff",
+      "mode": "demo",
+      "claim_id": "baf6ac17-00c0-5f79-a658-ca1f50dddcef",
+      "passage_id": "05aefbcc-37ec-5e59-ba96-e98f33155f79",
+      "relationship": "supports",
+      "authority_for_claim": "Direct report of what the company claims",
+      "directness": "Explicit statement",
+      "independence": "shared_origin",
+      "reasoning": "Synthetic company report, no independent corroboration"
+    }
+  ],
+  "expectations": [
+    {
+      "schema_version": "1.0",
+      "question": "What can this evidence establish?",
+      "expected_behavior": "Preserve old/new reporting years and both observations; do not label the old revenue current.",
+      "claim_ids": [
+        "78a38f8f-8759-5a84-a446-920224c468c9",
+        "baf6ac17-00c0-5f79-a658-ca1f50dddcef"
+      ],
+      "critical": true
+    }
+  ]
+}

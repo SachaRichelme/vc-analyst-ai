@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "split": "development",
+  "annotation_owner": "project-authored synthetic expectations; not independent VC review",
+  "cases": [
+    {"id": "supported", "fixture": "examples/demo/supported.json"},
+    {"id": "sparse", "fixture": "examples/demo/sparse.json"},
+    {"id": "conflicted", "fixture": "examples/demo/conflicted.json"},
+    {"id": "refresh", "fixture": "examples/demo/refresh.json"}
+  ],
+  "held_out_cases": [],
+  "live_evaluation_enabled": false
+}

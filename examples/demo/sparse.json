@@ -1,0 +1,152 @@
+{
+  "schema_version": "1.0",
+  "case_id": "sparse",
+  "mode": "demo",
+  "label": "DEMO — synthetic fixture, not live research",
+  "provenance": "Original synthetic developer fixture. No real company, collected webpage, or paid provider output.",
+  "license": "CC0-1.0",
+  "companies": [
+    {
+      "schema_version": "1.0",
+      "id": "8b86f8e2-cb76-5f7a-ad3f-a4f77251032f",
+      "mode": "demo",
+      "name": "Lumen Fixture Software",
+      "website": "https://lumen.example/",
+      "aliases": [],
+      "jurisdiction": null,
+      "first_seen_at": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "sources": [
+    {
+      "schema_version": "1.0",
+      "id": "b0f554cc-bb1d-5776-a6e9-35444fd40737",
+      "mode": "demo",
+      "url": "https://lumen.example/report-0",
+      "publisher": "Synthetic Lumen",
+      "source_type": "company",
+      "origin_group": null,
+      "retention": "full",
+      "model_processing_allowed": true,
+      "export_allowed": true,
+      "rights_basis": "Original synthetic test text, CC0-1.0"
+    }
+  ],
+  "versions": [
+    {
+      "schema_version": "1.0",
+      "id": "107a1673-ca4f-5ecb-b2f4-349cfa1d3e9b",
+      "mode": "demo",
+      "source_id": "b0f554cc-bb1d-5776-a6e9-35444fd40737",
+      "title": "Synthetic annual report",
+      "content_hash": "a9556cdfe3ca9fe12a942ec9e349bbab6cdf9c29124994e601789cb7959b12dc",
+      "published_at": "2026-01-01T00:00:00Z",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "observed_at": null,
+      "last_checked_at": null,
+      "last_verified_at": null,
+      "expires_at": null,
+      "extractor_version": "fixture-1",
+      "previous_version_id": null
+    }
+  ],
+  "documents": [
+    {
+      "schema_version": "1.0",
+      "version_id": "107a1673-ca4f-5ecb-b2f4-349cfa1d3e9b",
+      "text": "Lumen Fixture Software reports annual revenue of EUR 100 in 2025."
+    }
+  ],
+  "passages": [
+    {
+      "schema_version": "1.0",
+      "id": "893201a1-15cd-557b-8617-b4d85df2d94e",
+      "mode": "demo",
+      "source_version_id": "107a1673-ca4f-5ecb-b2f4-349cfa1d3e9b",
+      "excerpt": "Lumen Fixture Software reports annual revenue of EUR 100 in 2025.",
+      "locator": "paragraph 1",
+      "extraction_version": "fixture-1"
+    }
+  ],
+  "claims": [
+    {
+      "schema_version": "1.0",
+      "id": "a8c9b622-adae-5958-bdc2-64e89723d0e5",
+      "mode": "demo",
+      "company_id": "8b86f8e2-cb76-5f7a-ad3f-a4f77251032f",
+      "predicate": "annual_revenue",
+      "value": {
+        "schema_version": "1.0",
+        "kind": "number",
+        "value": "100",
+        "unit": "money",
+        "currency": "EUR"
+      },
+      "statement_class": "COMPANY CLAIM",
+      "derivation": "reported",
+      "verification": "supported",
+      "as_of": "2026-01-01T00:00:00Z",
+      "observed_at": null,
+      "period_start": null,
+      "period_end": null,
+      "confidence_reasons": [
+        "Company-reported; not independently verified"
+      ],
+      "calculation_id": null,
+      "premise_claim_ids": [],
+      "rationale": null,
+      "supersedes_id": null
+    },
+    {
+      "schema_version": "1.0",
+      "id": "084fb03f-1422-5ad4-94fa-85675f55817f",
+      "mode": "demo",
+      "company_id": "8b86f8e2-cb76-5f7a-ad3f-a4f77251032f",
+      "predicate": "net_revenue_retention",
+      "value": {
+        "schema_version": "1.0",
+        "kind": "missing",
+        "reason": "not_found_in_reviewed_sources",
+        "explanation": "Not disclosed in this synthetic document"
+      },
+      "statement_class": "UNKNOWN",
+      "derivation": "unknown",
+      "verification": "unreviewed",
+      "as_of": "2026-09-26T00:00:00Z",
+      "observed_at": null,
+      "period_start": null,
+      "period_end": null,
+      "confidence_reasons": [],
+      "calculation_id": null,
+      "premise_claim_ids": [],
+      "rationale": null,
+      "supersedes_id": null
+    }
+  ],
+  "links": [
+    {
+      "schema_version": "1.0",
+      "id": "5bc09100-bd11-5f85-a1e1-73175450d648",
+      "mode": "demo",
+      "claim_id": "a8c9b622-adae-5958-bdc2-64e89723d0e5",
+      "passage_id": "893201a1-15cd-557b-8617-b4d85df2d94e",
+      "relationship": "supports",
+      "authority_for_claim": "Direct report of what the company claims",
+      "directness": "Explicit statement",
+      "independence": "shared_origin",
+      "reasoning": "Synthetic company report, no independent corroboration"
+    }
+  ],
+  "expectations": [
+    {
+      "schema_version": "1.0",
+      "question": "What can this evidence establish?",
+      "expected_behavior": "Keep retention unknown; do not infer it from revenue. Ask the founder for cohort retention.",
+      "claim_ids": [
+        "a8c9b622-adae-5958-bdc2-64e89723d0e5",
+        "084fb03f-1422-5ad4-94fa-85675f55817f"
+      ],
+      "critical": true
+    }
+  ]
+}
