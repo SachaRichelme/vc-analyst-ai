@@ -1,0 +1,65 @@
+# Credentials and local configuration (examples are intentionally versioned)
+.env
+.env.*
+!.env.example
+credentials*
+secrets*
+*.pem
+*.key
+*.p12
+*.pfx
+.aws/
+.ssh/
+.netrc
+.npmrc.local
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage*
+htmlcov/
+coverage/
+
+# JavaScript / build outputs
+node_modules/
+dist/
+build-output/
+.next/
+.vinext/
+out/
+*.tsbuildinfo
+
+# Local services, generated research and tool state
+.local/
+.data/
+artifacts/
+outputs/
+*.sqlite*
+*.db
+*.db-wal
+*.db-shm
+pgdata/
+.wrangler/
+.sites-runtime/
+.openai/
+.agents/
+.codex/
+.vercel/
+
+# Editor/system/test artifacts
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*.log
+logs/
+test-results/
+playwright-report/
+.cache/
