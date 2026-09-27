@@ -6,7 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "vc-research-copilot"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["pydantic==2.13.5"]
+dependencies = ["pydantic==2.13.5", "httpx==0.28.1", "fastapi==0.141.1", "uvicorn==0.54.0"]
+
+[tool.setuptools.package-data]
+vc_research = ["demo/static/*"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

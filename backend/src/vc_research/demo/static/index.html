@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VC Analyst AI · Research workspace</title><link rel="stylesheet" href="/static/style.css"><script defer src="/static/app.js"></script><script defer src="/static/sourcing.js"></script></head>
+<body>
+<header><div class="brand">VC Analyst AI <span>RESEARCH COPILOT</span></div><span class="local">LOCAL WORKSPACE</span></header>
+<main>
+<section class="intro"><p class="eyebrow">FROM PUBLIC EVIDENCE TO INVESTMENT QUESTIONS</p><h1>Research the company.<br>Keep the judgment.</h1><p>Source-linked VC analysis, transparent unknowns and a memo you can challenge.</p></section>
+<div class="workspace-switch" aria-label="Workspace"><button id="show-analysis" type="button" aria-pressed="true">Analyze Company</button><button id="show-discovery" type="button" class="secondary" aria-pressed="false">Discover Startups</button></div>
+<section id="discovery-workspace" hidden>
+<div class="panel"><h2>Investment mandate</h2><p>Fresh discovery from a defined universe of public web sources. This is a bounded shortlist, not exhaustive market coverage.</p>
+<form id="discover-form">
+<div class="grid">
+<label>Discovery mode<select id="discover-mode"><option value="demo">Offline · synthetic sourcing</option><option value="live">Live · fresh external discovery</option></select></label>
+<label>Signal freshness<select id="freshness"><option value="7d">Last 7 days</option><option value="30d" selected>Last 30 days</option><option value="90d">Last 90 days</option><option value="12m">Last 12 months</option></select></label>
+<label>Stage<select id="stages" multiple size="6"></select></label>
+<label>Sector<select id="sectors" multiple size="6"></select></label>
+<label>Custom sectors / thesis (comma-separated)<input id="custom-sectors" maxlength="240" placeholder="AI infrastructure, carbon removal"></label>
+<label>Geography<select id="geographies" multiple size="6"></select></label>
+<label>Custom geographies (comma-separated)<input id="custom-geographies" maxlength="200" placeholder="Canada, Singapore"></label>
+<label>Business model<select id="business-models" multiple size="6"></select></label>
+<label>Recent signal types<select id="signal-types" multiple size="6"></select></label>
+<label>Include keywords (all, comma-separated)<input id="include-keywords" maxlength="240" placeholder="LLM inference"></label>
+</div><p class="muted">Use Cmd/Ctrl to select multiple values. No selection means Any. Unknown stage and business model are retained for review.</p>
+<details><summary>Funding, company age &amp; exclusions</summary><div class="grid">
+<label>Funding filter currency<select id="funding-currency"><option>USD</option><option>EUR</option><option>GBP</option></select></label>
+<label>Minimum total funding (full units)<input id="min-total" type="number" min="0" max="1000000000000" step="any" placeholder="Not specified"></label>
+<label>Maximum total funding (full units)<input id="max-total" type="number" min="0" max="1000000000000" step="any" placeholder="Not specified"></label>
+<label>Minimum latest round (full units)<input id="min-round" type="number" min="0" max="1000000000000" step="any" placeholder="Not specified"></label>
+<label>Maximum latest round (full units)<input id="max-round" type="number" min="0" max="1000000000000" step="any" placeholder="Not specified"></label>
+<label>Founded after year (exclusive)<input id="founded-after" type="number" min="1800" max="2100" placeholder="Not specified"></label>
+<label>Founded before year (exclusive)<input id="founded-before" type="number" min="1800" max="2100" placeholder="Not specified"></label>
+<label>Exclude keywords<input id="exclude-keywords" maxlength="240" placeholder="Comma-separated"></label>
+<label>Exclude sectors<input id="exclude-sectors" maxlength="240" placeholder="Comma-separated"></label>
+<label>Exclude geographies<input id="exclude-geographies" maxlength="240" placeholder="Comma-separated"></label>
+<label>Exclude companies / domains<input id="exclude-companies" maxlength="240" placeholder="Comma-separated"></label>
+</div><label class="check"><input type="checkbox" id="keep-unknown-funding" checked>Keep companies with unknown funding eligible. No currency conversion is assumed.</label></details>
+<div id="discover-live-controls" hidden><label class="check"><input type="checkbox" id="confirm-discover">I authorize one LIVE discovery: at most 3 Tavily searches and 1 OpenAI call, estimated admission ceiling $0.10. No automatic company analysis.</label><p class="muted">Uses the same local .env credentials and explicit live setting as Company Analysis. No retries.</p></div>
+<button id="discover-submit" type="submit">Discover startups →</button>
+</form><p id="discover-status" role="status" aria-live="polite"></p></div>
+<div id="shortlist" hidden><h2>Startup shortlist</h2><p id="mandate-summary"></p><p id="discovery-receipt" class="muted"></p><div id="startup-cards" class="grid"></div><details><summary>Filtering decisions &amp; coverage limits</summary><div id="discovery-exclusions"></div></details></div>
+</section>
+<div id="analysis-workspace">
+<section class="panel">
+<form id="research-form">
+<div class="inputs"><label>Company name or website<input id="company" name="company" required maxlength="180" value="Lumen" placeholder="Company name or https://company.com" autocomplete="off"></label><label>Research mode<select id="mode"><option value="demo">Offline · synthetic fixture</option><option value="live">Live · fresh public research</option></select></label><button id="analyze" type="submit">Analyze company →</button></div>
+<p id="mode-help" class="muted">Offline accepts Lumen (financial case) or Lumen Sparse (missing data). No API calls.</p>
+<div id="live-controls" hidden><p id="readiness" class="muted"></p><label class="check"><input id="confirm-live" type="checkbox">I authorize this one-company live run: up to 3 Tavily searches and 2 OpenAI calls. Estimated admission ceiling $0.20; provider billing may differ.</label><p class="muted">No automatic retries. Leaving this tab does not cancel an in-flight request. Sources and company input are sent to the configured providers.</p></div>
+</form>
+<div id="status" role="status" aria-live="polite"></div>
+</section>
+<section id="empty" class="empty"><h2>Evidence first. Conclusions second.</h2><div class="grid"><p><strong>01 / Research</strong><br>Bounded public-source research with visible provenance.</p><p><strong>02 / Challenge</strong><br>Separate reported claims, interpretations and unknowns.</p><p><strong>03 / Prepare</strong><br>Review the memo and focus the founder conversation.</p></div></section>
+<div id="results" hidden>
+<section class="result-heading"><div><p id="run-mode" class="eyebrow"></p><h2 id="company-title"></h2><p id="run-meta" class="muted"></p></div><a id="download" class="button secondary" href="#">Download memo (.md)</a></section>
+<p class="legend">FACT = external report, still unreviewed · COMPANY CLAIM = self-report · INFERENCE = interpretation · UNKNOWN = evidence gap · CALCULATED VALUE = Python result · ASSUMPTION = analyst input</p>
+<nav aria-label="Report sections"><a href="#overview">Overview</a><a href="#market">Market &amp; Competition</a><a href="#evidence">Evidence</a><a href="#financials">Financials</a><a href="#valuation">Valuation</a><a href="#diligence">Diligence</a><a href="#memo">Memo</a></nav>
+<section id="overview" class="report-section"><h2>Company analysis</h2><div id="overview-content" class="grid"></div></section>
+<section id="market" class="report-section"><h2>Market &amp; competition</h2><div id="market-content" class="grid"></div></section>
+<section id="evidence" class="report-section"><h2>Evidence &amp; sources</h2><p class="muted">Quotes match the retrieved excerpt. This verifies quotation accuracy, not the truth of a claim. Open sources to review context.</p><div id="evidence-content" class="grid"></div><details><summary>Research receipt &amp; source retrieval times</summary><div id="receipt"></div></details></section>
+<section id="financials" class="report-section"><h2>Financial analysis</h2><p id="financial-state"></p><div id="financial-results" class="grid"></div>
+<form id="financial-form" hidden class="panel"><h3>Review financial inputs</h3><p>Open the cited evidence first. Select only comparable reported metrics for this company. Leave missing inputs unselected.</p><div id="financial-selects" class="grid"></div><details><summary>Optional valuation sensitivities — analyst assumptions</summary><p>Enter explicit revenue multiples only to explore hypothetical enterprise values. These are not sourced comps or a fair-value recommendation.</p><div class="grid"><label>Bear multiple<input id="bear" inputmode="decimal" placeholder="Not supplied"></label><label>Base multiple<input id="base" inputmode="decimal" placeholder="Not supplied"></label><label>Bull multiple<input id="bull" inputmode="decimal" placeholder="Not supplied"></label></div></details><label class="check"><input id="confirm-finance" type="checkbox" required>I verified the company, currency, scale, actual-versus-forecast status and period comparability. Current/prior revenue cover comparable durations in the correct order; cash and net burn describe a compatible period.</label><button type="submit">Calculate reviewed inputs · no API calls</button><p id="finance-error" role="status"></p></form>
+</section>
+<section id="valuation" class="report-section"><h2>Valuation &amp; scenarios</h2><div id="valuation-content"></div><div id="scenarios" class="grid"></div></section>
+<section id="diligence" class="report-section"><h2>Risks, unknowns &amp; founder questions</h2><div id="risk-content" class="grid"></div><div id="questions" class="panel"></div></section>
+<section id="memo" class="report-section"><h2>Investment memo</h2><p class="muted">Research draft for human review. Markdown export uses the same evidence and deterministic calculations shown above.</p><pre id="memo-content"></pre></section>
+<details class="panel"><summary>Coverage &amp; limitations</summary><ul id="limitations"></ul></details>
+</div>
+</div>
+</main><footer>Investment judgment stays with the analyst. No automatic invest/pass decision.</footer>
+</body></html>

@@ -1,97 +1,145 @@
-# VC Research Copilot
+# VC Analyst AI
 
-An evidence-first research copilot for VC analysts. Investment judgment stays with the analyst.
+A local research copilot for venture capital analysts. Investment judgment stays with the analyst.
 
-[SPEC.md](SPEC.md) is the approved product and architecture specification. **Step 1 is implemented:** typed contracts, synthetic evidence fixtures, offline provider replay and tests. No live research, API server, PostgreSQL persistence, budget controller, financial execution engine or product UI exists yet.
+**Browser implementation is complete; real-provider acceptance is pending local credentials.**
+The app supports company research, source-linked analysis, financial input review, deterministic
+calculations, explicit valuation abstention and a Markdown investment memo. Offline fixtures are
+clearly labeled and never used as a fallback for live research.
 
-## Open and inspect in VS Code
+**Discover Startups is now the second entry point.** Define a mandate, inspect an
+evidence-backed shortlist, then select a company for the existing analysis workflow.
+Offline sourcing and browser handoff are tested; live sourcing is prepared but not paid-provider
+validated. See [SOURCING.md](docs/SOURCING.md) for filters, usage limits and test results.
 
-Open this existing directory using **File → Open Folder**. Use the integrated terminal:
+## Launch from VS Code
 
-```sh
-cd "/Users/sacharichelme/Documents/ChatGPT/VC ANALYST AI"
-git status --short --branch
-git log --oneline -5
-find backend/src backend/tests examples/demo evals docs -type f -not -path '*/__pycache__/*'
-```
-
-## Run Step 1 on this checkout
-
-The repository-local `.venv` is already installed. No activation, credentials, database,
-Node installation, Docker or cloud service is needed to run these tests:
+Open this folder in VS Code and use its integrated terminal:
 
 ```sh
-cd "/Users/sacharichelme/Documents/ChatGPT/VC ANALYST AI"
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest -c backend/pyproject.toml backend/tests
+.venv/bin/python -m uvicorn vc_research.webapp:app --app-dir backend/src --host 127.0.0.1 --port 8000 --no-access-log
 ```
 
-Run only the offline fixture demonstration/tests:
+Open **http://127.0.0.1:8000**. Stop the server with **Ctrl+C**. If this sprint's server
+is already running, open that URL without launching a second copy. Use one process;
+no `--workers`, `--reload`, public host, Docker, Node build or database is needed.
 
-```sh
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest -c backend/pyproject.toml backend/tests/test_fixtures.py -v
-```
-
-This validates fixture graphs and replays search/model responses; it is not a working
-interactive demo of the eventual application. No default test sends a paid request.
-
-## Recreate the environment if necessary
-
-Use a normal Python **3.12 or newer** installation; the Mac system Python 3.9 is too old.
-With Python 3.12 installed and on PATH, run from this repository root:
+For a fresh checkout, install Python 3.12 or newer and run once:
 
 ```sh
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -r backend/requirements-dev.lock
-.venv/bin/python -m pip check
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest -c backend/pyproject.toml backend/tests
 ```
 
-On this Mac, the first environment was bootstrapped with the available interpreter at
-`/Users/sacharichelme/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3`.
-That absolute path can replace `python3.12` in the first command while it exists. It is
-not required by the source code; a standard Python installation is sufficient. Like any
-venv, `.venv` depends on its base interpreter remaining available; recreate it if the
-interpreter is removed. No proprietary IDE is required.
+Select `.venv/bin/python` as your VS Code interpreter. The existing local environment
+is already installed. No installation is needed merely to launch this checkout.
 
-Dependency installation uses the package registry; running the installed tests is offline.
-All direct/transitive test dependencies are pinned in `backend/requirements-dev.lock`.
-pytest's configuration adds `backend/src` to the import path; no editable install is needed.
-Select `.venv/bin/python` as VS Code's Python interpreter if using its Python extension.
+## Offline walkthrough
 
-## Source map
+Leave **Offline · synthetic fixture** selected, enter **Lumen**, and click **Analyze company**.
+All company information and sources in this mode are synthetic. It makes zero provider calls.
 
-- `backend/src/vc_research/domain/`: evidence, missing values, research/run, memo, thesis, relationship, correction, budget and routing contracts.
-- `backend/src/vc_research/providers/`: small provider interfaces and demo-only replay.
-- `backend/src/vc_research/fixtures.py`: referential/hash/excerpt integrity for synthetic bundles.
-- `backend/src/vc_research/materiality.py`: conservative material-claim policy.
-- `backend/src/vc_research/calculations.py`: exact-version calculation registry contracts; no execution.
-- `backend/tests/`: offline unit/contract/fixture tests and network guard.
-- `examples/demo/`: labeled original synthetic data and provider transcripts.
-- `evals/`: development case manifest and human evaluation definitions, not benchmark claims.
-- `docs/decisions/`: important design decisions and current limitations.
+Open **Financials**, review the evidence, then select:
 
-Pydantic's `model_json_schema()` exposes machine-readable contracts when needed; generated
-frontend types will be introduced with the API/UI integration, not maintained in duplicate now.
+| Input | Evidence |
+|---|---|
+| Prior revenue | C4 — USD 2 million, FY2024 |
+| Current revenue | C5 — USD 3 million, FY2025 |
+| Gross profit | C6 — USD 2.4 million, FY2025 |
+| Cash | C7 — USD 1.2 million |
+| Monthly net burn | C8 — USD 100 thousand |
 
-## Services and safety
+Confirm comparability and click **Calculate reviewed inputs**: growth 50%, gross margin
+80%, runway 12 months. Optional bear/base/bull multiples of 2/3/4 produce illustrative
+enterprise values of USD 6/9/12 million. These multiples are explicit assumptions, not comps.
+Calculations and source lineage appear in the memo. Download it with **Download memo (.md)**.
 
-There are **no Step 1 services to start or stop**, migrations to run, scheduled tasks or
-application logs. Tests finish normally; Ctrl+C stops them. PostgreSQL/worker setup is
-Step 2, pending separate approval. Backend/frontend launch commands will be documented
-when those components exist. Do not start the old scaffold to run Step 1.
+Use **Lumen Sparse** to see missing-data and valuation abstention. Other company names are
+rejected in offline mode rather than silently mapped to fixtures.
 
-Live adapters are absent, and configuration rejects enabling live operations. Credentials
-in your environment do not enable execution. `.env.example` contains no secrets and is
-not automatically loaded. Never put real credentials in examples, fixtures or Git.
+## Enable live research
 
-The root `.gitignore` excludes environments, credentials, runtime state and generated
-artifacts. Pattern-based secret scanning reduces risk but does not guarantee that every
-possible secret can be detected; inspect changes before committing. Nothing has been pushed.
+1. Obtain keys from [OpenAI](https://platform.openai.com/api-keys) and
+   [Tavily](https://app.tavily.com/). OpenAI API billing is separate from a ChatGPT subscription.
+2. Open the root `.env` locally in VS Code. This checkout already has an empty file;
+   on a fresh checkout copy `.env.example` to `.env` first. Never paste keys into chat.
+3. Save these variables with your actual keys:
 
-## Preserved scaffold
+```dotenv
+VC_ENABLE_LIVE=true
+OPENAI_API_KEY=your_local_openai_key
+TAVILY_API_KEY=your_local_tavily_key
+```
 
-`platform/` is the inactive Sites/Vinext scaffold created before architecture approval.
-It is preserved unchanged, including source and lockfile. Its old README/deployment
-instructions are not the workflow for this project. Installed modules, local Site identity
-and runtime state are ignored. The approved React/Vite frontend will be addressed at its
-implementation step without silently deleting this work.
+`.env` is Git-ignored. Settings are read on each run, so no restart is needed after saving
+keys. Shell environment values override the file. Set `VC_ENABLE_LIVE=false` to disable live
+execution again. The UI never exposes the keys.
+
+Choose **Live · fresh public research**, enter an exact official company URL, check the
+per-run authorization box, then click **Analyze company**. Loading a page, changing modes
+or reviewing financial inputs never triggers paid research.
+
+## What a live run does
+
+- Three fresh Tavily basic searches: company/product/team; funding/traction; competition/risks.
+- At most nine deduplicated source excerpts, bounded to 3,500 characters each.
+- One OpenAI extraction call and one analysis call using `gpt-4.1-mini-2025-04-14`.
+- Exact-quote and citation-ID checks; Step 1 evidence and missing-data contracts.
+- Nine VC sections, qualitative bull/base/bear hypotheses, founder questions and memo.
+- Financial candidates require analyst review before Python Decimal calculations.
+  Recalculation and exports make no API calls. Missing data is never filled with zero.
+
+No retries, loops, background activity, batch research or automatic company sourcing.
+Hard call/output/input caps and an estimated USD 0.20 admission ceiling apply per run.
+The time budget is checked between operations/response chunks with bounded HTTP timeouts;
+it is not a strict wall-clock process-kill guarantee. An in-flight request can be billed even
+if you close the tab or interrupt the server. Only one run at a time per server process.
+
+## Limits you should present honestly
+
+This is a bounded public-information research draft, not complete diligence. Search results
+can be stale even when the API query is fresh; retrieval and publication dates are separate.
+Quotation checks do not prove truth, source independence or semantic support for an inference.
+The analyst must review identity, citations, contradictory evidence and financial definitions.
+
+Financial extraction is deliberately strict about explicit currency and scale. Many real
+companies will produce abstention. Revenue growth, gross margin, runway and observed EV/revenue
+are supported when reviewed inputs permit. Assumed revenue-multiple sensitivities are supported;
+normalized peer valuation and DCF execution are not. DCF always displays the missing-input reason.
+
+Only the last successful report is held in memory. Restarting the server loses it; download
+memos you want to keep. A failed new run does not replace the last successful report. No database,
+accounts, cloud deployment or monitoring is included. Sourcing runs only on an explicit user
+request and never automatically analyzes its candidates. Do not expose this local app online.
+
+## Tests
+
+```sh
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest -c backend/pyproject.toml backend/tests
+.venv/bin/python -m pip check
+```
+
+Tests block outbound sockets and make no paid calls. All 94 tests at the recovery checkpoint
+remain; route tests exercise browser assets, reports, finance, export, admission and isolation.
+One Starlette warning concerns its future TestClient transport migration; it does not affect
+production HTTPX calls or the currently pinned passing tests.
+
+An optional real-browser harness is in `tools/demo-browser-smoke.cjs` (requires Playwright
+and installed Chrome). With the server running, `node tools/demo-browser-smoke.cjs` tests
+only offline data. `PLAYWRIGHT_MODULE` can point to an existing Playwright installation.
+The explicit `--live` option makes ONE real run and must only be used intentionally after
+configuring credentials. It saves acceptance receipts to ignored `.local/`; it never retries.
+
+## Code and project history
+
+- `backend/src/vc_research/domain/`, `providers/`, `calculations.py`: preserved Step 1 foundations.
+- `backend/src/vc_research/demo/`: bounded providers, extraction/analysis, Python finance, fixtures and static UI.
+- `backend/src/vc_research/webapp.py`: minimal FastAPI application and single-process admission.
+- `backend/src/vc_research/sourcing/`: bounded discovery, evidence validation, mandate filtering and synthetic sourcing fixtures.
+- `backend/tests/`: contract, recovery and route tests.
+- `docs/DEMO_GUIDE.md`: costs, demo script and validation status.
+- `docs/RECOVERY_REPORT.md`: historical checkpoint before browser integration.
+- `SPEC.md`: historical broader scope, superseded in sequencing by demo-first instructions.
+- `platform/`: preserved inactive earlier scaffold; not used to run this app.
+
+Sourcing is implemented; infrastructure expansion remains deferred. Nothing is deployed or pushed.

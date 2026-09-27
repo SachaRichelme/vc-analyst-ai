@@ -1,203 +1,126 @@
-# VC Research Copilot — consolidated specification and implementation plan
+# VC Research Copilot — Portfolio Demo MVP
 
-Status: PROPOSED — awaiting approval before feature implementation  
-Version: 1.0  
-Specification date: 2026-09-26  
-Supersedes: the architectural proposal in this conversation and its earlier MVP boundaries.
+> Demo sprint, 2026-09-27: the latest user instructions supersede the sequence below.
+> The local company-analysis browser vertical slice is implemented and tested offline.
+> Sourcing is now implemented as an explicitly requested second mode; see [SOURCING.md](docs/SOURCING.md).
+> Real-provider acceptance remains unverified; infrastructure expansion remains deferred.
+> See [README.md](README.md) and [DEMO_GUIDE.md](docs/DEMO_GUIDE.md) for current operation and validation status.
+
+Version: 2.0 — scope revision proposed for approval
+Date: 2026-09-26
+Implementation status: Step 1 approved and committed; Step 2 NOT authorized yet.
+
+This is the revised product specification. It replaces the v1 scope and sequence while preserving its evidence, missing-data and cost-safety principles. [The exact previously approved v1 specification](docs/archive/SPEC-v1-approved.md) is retained as historical design material, not a competing implementation plan. The latest user instructions govern this revision.
 
 ## 1. Product decision
 
-Build an open-source research copilot for venture capital analysts that discovers companies, accumulates reusable evidence, and prepares reviewable company dossiers and investment memo drafts. Investment judgment remains with the human analyst.
+Build a technically credible, cost-efficient **portfolio/demo project for VC recruiting**, also useful to its single operator for occasional real sourcing, research, financial analysis and memo preparation.
 
-Priority order: **evidence reliability → analyst usefulness → research quality → cost control → reproducibility → speed → feature count**.
+The six visible pillars are: fresh startup sourcing; evidence-backed company research; deterministic financial modeling and valuation; high-quality VC analysis; investment memos; and a focused demo interface. Investment judgment remains human. No automated INVEST/PASS decision or investment score.
 
-The first release must prove two connected paths:
+The primary journey is **discover → select → analyze → financial modeling where supported → diligence questions → memo**. A user may enter a company name or URL directly. Names must resolve to a confirmed identity before research. Stored knowledge and cache supplement fresh external research; they never define the boundary of the research universe.
 
-1. **Discover → select:** a narrow mandate searches existing knowledge AND fresh external sources, resolves duplicates, and returns explained candidates without automatically researching all of them.
-2. **Company URL or selected candidate → research → evidence → analyst review → memo → refresh.** This remains the primary quality benchmark.
+This is not a multi-user SaaS, continuously running intelligence platform, CRM, portfolio monitor or production-scale database. Persist enough to make research inspectable, avoid duplicate calls, and reopen recent analyses. Build less operational infrastructure and invest the effort in analytical quality.
 
-The database is research memory, not a closed company universe. The interface should expose the work, its evidence and its limits without requiring the user to understand agent infrastructure.
+Quality priorities remain evidence reliability, analyst usefulness, research quality, cost safety, reproducibility, speed, then feature count. A polished demo must never obscure unknowns or turn synthetic financials into claims about a real company.
 
-### Initial audience and scope
+### Analytical scope
 
-- A single analyst operating a personal/local installation; no team SaaS or public anonymous research endpoint.
-- Seed–Series A B2B software companies. Begin with English-language sources and Europe/UK/US geography tags; coverage will depend on source availability.
-- Structured mandate fields: geography, stage, sector/subsector, business model, optional ticket range, and optional analyst question. Ticket compatibility remains unknown when there is no reliable relevant information; total funding is not a proxy for ticket size.
-- Other company types may be recorded and surfaced with an explicit limited-analysis warning. Do not apply SaaS KPIs to hardware, biotech, marketplaces or financial institutions.
-- Public-information research only in the MVP. Confidential decks, spreadsheets and founder-call uploads are deferred.
-- Outputs are preliminary research and memo drafts, not completed commercial, legal, technical or financial diligence.
+The first specialist templates cover (A) Seed–Series A B2B software and (B) a more mature private/growth software company with sufficient financial inputs. Geography starts with Europe/UK/US and English-language sources. Sourcing can identify other businesses, including ClimateTech, but specialist analysis must declare its limitations rather than apply SaaS economics indiscriminately.
 
-### Deliberate scope changes and challenges
-
-Fresh sourcing is now an MVP requirement, but it is a bounded discovery feature, not a startup search engine with exhaustive coverage. The example “European Seed–Series A Climate Tech” is a long-term mandate example; the first benchmark covers software companies, including climate software, rather than promising specialist climate hardware diligence.
-
-Three separate full research products would create unnecessary scope. The MVP exposes **Quick Scan** and **Research**. Research implements the Standard profile and includes a concise memo and skeptical review. Deep Research is a later, larger-budget extension, not a prerequisite for useful memos. Profile names never determine whether missing information is fabricated.
-
-A “living database” means reusable observations and explicit refresh, not continuous background monitoring. No scheduled polling or spending occurs in the MVP.
-
-Founders are historical founding participants; current executive roles can change. Model these separately. Headcount, disclosed customer logos, paying customers and active customers are distinct concepts. Absence of negative results is not evidence that no problems exist.
+Financial modeling is a core MVP pillar, not a distant future feature. The implementation sequence within Step 4 is incremental: metrics, sizing, method eligibility, multiples/scenarios, then DCF/sensitivity with qualified inputs. The deliverable includes an honest refusal path as well as successful models. Do not require a private real company to disclose information merely to make the demo work: the rich financial offline case may use labeled synthetic, permitted or analyst-entered assumed inputs.
 
 ## 2. Scope contract
 
-| MVP — BUILD NOW | ARCHITECT NOW / IMPLEMENT LATER | FUTURE IDEAS |
+| MVP — BUILD IN STEPS 2–7 | LATER / FUTURE | DO NOT BUILD |
 |---|---|---|
-| Narrow mandate form and fresh external discovery on every live sourcing run | Additional source adapters and paid provider contracts | Find Similar Companies |
-| Existing-database search merged with fresh candidates and signals | Richer mandate semantics, fund-specific thesis and analyst-maintained portfolio | Theme / Market Discovery |
-| Deterministic identity matching and explicit ambiguous matches | Additional business-model templates | Portfolio Monitoring |
-| Lightweight candidate facts, qualification reasons and source links | Deep Research budget profile, wider cross-checking | Broader Fund Intelligence |
-| Explicit company selection before substantive research | Permissioned document ingestion and structured metric review | Advanced thematic research |
-| Standard research, targeted disconfirmation and concise memo | Advanced financial modeling, market-sizing workbench, valuation | Team collaboration and CRM integrations |
-| Evidence viewer, conflicts, unknowns and qualitative coverage | Professional PDF and editable financial exports | Larger-scale discovery after coverage evaluation |
-| Persistent corrections, versioned memos and thesis dependencies | Full historical comparison UI and richer “what changed?” analysis | Additional specialist analytical modules |
-| Incremental refresh with a simple change summary | More sophisticated change propagation and batch processing | |
-| Central budgets, task routing and operation-level usage | Additional model providers and cheaper-model experiments | |
-| Offline demo fixtures; Markdown and evidence JSON export | Optional semantic retrieval if evaluations justify it | |
-| Small deterministic calculation registry | DCF, comparables, cohort analysis, scenario valuation | |
+| Fresh external sourcing plus saved company candidates | Multi-user/team features if ever justified | Automated investment decisions or arbitrary fit/confidence percentages |
+| User selection before substantive company research | Continuous/scheduled monitoring, portfolio intelligence, CRM | Automatic deep research of all sourced companies |
+| Fresh company research, dated evidence and explicit unknowns | Sophisticated history timelines and relationship/correction tracking | Investor personalities, IC voting, autonomous agent hierarchies |
+| Lightweight PostgreSQL persistence, recent reuse/cache | Distributed workers, leases, heartbeats, automated recovery/resume | Kubernetes, Kafka, Redis, microservices for this demo |
+| Simple bounded local execution and operation usage records | Full billing/reconciliation infrastructure | Paid provider replicas or access-control bypasses |
+| Deterministic metrics, market sizing, appropriate valuation | Additional specialist sector templates and data adapters | Graph/vector databases without demonstrated need |
+| Thesis dependencies, Why Now, targeted skeptical validation | Advanced comparable data feeds and proprietary databases | Fabricated financial inputs or automatic DCF for sparse startups |
+| Memo with citations and financial/valuation sections where supported | Private document ingestion, professional PDF, editable spreadsheet export | Broad cloud/production artifact infrastructure |
+| Focused UI with evidence, assumptions, progress and errors | Theme discovery, Find Similar Companies, Fund Intelligence | A large SaaS dashboard |
+| Two labeled offline demo narratives; occasional opt-in live research | Advanced historical refresh/diff and cross-company knowledge automation | Scheduled or background paid activity |
 
-**Do not implement:** automated invest/pass decisions; arbitrary investment or fund-fit percentages; multi-agent IC voting; investor-personality simulations; dozens of agents; Neo4j or another graph database; a vector database without measured need; autonomous deep research on discovered candidates; unrestricted browsing/code-execution agents; paywall or access-control bypasses; private founder profiling; scraped proprietary database replicas; expensive paid-data dependencies; a claim of exhaustive startup coverage.
-
-No feature moves into the MVP merely because its schema can accommodate it. New scope requires an explicit decision after this specification is approved.
+Source snapshots and frozen memo input manifests remain MVP because they make citations reproducible. They do not require a comprehensive bitemporal company knowledge system. Keep existing future-facing contracts and tests without implementing their whole lifecycle.
 
 ## A. Final MVP architecture
 
-Use a modular monolith: one Python backend package, deployed as an API process and a worker process, with a separate React frontend. Keep domain logic independent of orchestration and vendors.
+React/TypeScript/Vite → FastAPI (when API delivery is needed) → ordinary Python application services → PostgreSQL → controlled provider adapters. One local operator, one explicitly launched run at a time. A CLI/test harness precedes the product UI.
 
-```mermaid
-flowchart TD
-    UI[Analyst workspace] --> API[FastAPI]
-    API --> DB[(PostgreSQL)]
-    DB --> W[Worker: durable run and lease]
-    W --> BC[Budget controller and operation gateway]
-    BC --> SP[Search provider]
-    BC --> FETCH[Controlled retrieval and extraction]
-    BC --> MR[Task-aware model router]
-    FETCH --> ES[Evidence and company observations]
-    ES --> DB
-    MR --> ES
-    DB --> RV[Validation and memo rendering]
-    RV --> UI
-    FIX[Offline fixture adapters] --> W
-```
-
-| Layer | Decision |
+| Component | Decision |
 |---|---|
-| UI | React, TypeScript, Vite, accessible UI primitives; no server rendering requirement |
-| API/contracts | FastAPI, Pydantic, generated TypeScript API contracts |
-| Workflow | Small LangGraph state machine; functions perform bounded tasks; no autonomous agent hierarchy |
-| Persistence | PostgreSQL, SQLAlchemy, Alembic; PostgreSQL text search before embeddings |
-| Execution | Worker leases runs in PostgreSQL; checkpointed tasks, heartbeats, retry limits and cancellation |
-| Fetch/extract | HTTPX through a controlled fetcher; Trafilatura for clean HTML and metadata |
-| Models | One live provider initially behind a typed adapter; configurable models by task |
-| Calculations | Python Decimal and versioned, allowlisted formulas |
-| Artifacts | Local storage interface initially; S3-compatible implementation only for later hosted operation |
-| Documents | One structured memo schema → Markdown, evidence JSON, later HTML/PDF |
-| Development | Docker Compose, locked dependencies, fixture adapters, pytest, Playwright |
+| Frontend | Focused React/Vite views at Step 7; no SSR requirement |
+| Backend | Python/Pydantic; FastAPI added for the research/API interface, not for Step 2 ceremony |
+| Workflow | Plain Python bounded functions: plan/extract → VC analysis → deterministic finance → skeptical validation → memo |
+| Storage | PostgreSQL with SQLAlchemy/Alembic; one local database, explicit demo/live mode on records |
+| Runtime | Explicitly invoked local runner; no queue worker, scheduler, polling loop or automatic restart |
+| Providers | One search and one model provider first, behind existing contracts; no live adapters in Step 2 |
+| Costs | Shared operation gate, persisted reservations/results, hard run limits and simple operator spend ceiling |
+| Artifacts | Ignored local directory only for permitted content too large for database text or exports |
+| Extraction | Controlled HTTP retrieval/HTML cleaning at Step 3; complex document ingestion deferred |
+| Calculations | Versioned allowlisted Python functions with Decimal, typed input provenance and tests |
 
-PostgreSQL owns company knowledge and run state. LangGraph checkpoints contain references and workflow progress, not a second authoritative evidence database. Run jobs are not kept in an HTTP request or an in-memory background task. No Redis, Kubernetes or additional message broker initially.
+LangGraph is now a reference/future option rather than a required dependency. Nothing from it is currently implemented, so this avoids work rather than replacing working code. No distributed durable workflow engine is needed.
 
-A single local workspace is the initial access model. Bind local services to loopback; keep credentials server-side. An internet-accessible deployment must add authentication, server-side authorization and user/global quotas before enabling live operations. Hosting access from the previously registered private Site is not assumed to secure a separately deployed API.
+A local PostgreSQL advisory lock on a dedicated connection prevents simultaneous runners, including duplicate CLI/UI starts. Loss of that lock/connection halts admission of new external calls. Run/operation writes use short transactions, not one long transaction over network calls. Restart never resumes spending automatically. A stale running record is marked interrupted/partial on an explicit next invocation after establishing no other runner owns the lock; uncertain operations retain their reserved estimate. This is minimal spend safety, not general job recovery.
 
-The previous starter scaffold is not a stack commitment and contains no product implementation. Do not deploy or extend it solely because it exists.
+Services bind to loopback. No public backend deployment is in scope. Authentication/authorization would be required before internet exposure; a private frontend does not secure its backend.
 
-## B. Final database schema
+## B. Minimal persistence model
 
-This is the logical MVP schema to translate into reviewed migrations after approval. Use UUID primary keys, UTC timezone-aware timestamps, foreign keys, constrained status values and Decimal-compatible numeric fields. JSONB is for typed configuration, manifests and provider-specific payloads, not a substitute for evidence relationships.
+Step 2 proposes nine small tables. Use UUID identity, UTC timestamps, numeric money columns, constrained states, mode-scoped foreign keys, and validated versioned JSONB payloads for contract fields that do not need database queries. This balances simple storage with real relational evidence integrity.
 
-| Table | Core columns and purpose |
+| Table | Purpose |
 |---|---|
-| `companies` | `id`, canonical/display names, primary domain, aliases, jurisdiction, external IDs, `first_seen_at`; minimal stable identity, not a mutable bag of unsupported facts |
-| `related_entities` | `id`, type (`person`, `investor`, `market`, `accelerator`), name, identifiers; investor organizations can link to a company when appropriate |
-| `company_relations` | subject company, predicate (founder/current executive/invested in/direct competitor/indirect substitute/customer/market/accelerator), object company OR related entity, effective dates, supporting claim, review state; exactly one object reference |
-| `source_documents` | original/canonical URL, publisher, source type, origin/syndication group where known, provider ID, access/retention policy, first seen; identifies a resource |
-| `source_versions` | document FK, content hash, title, publication date and date basis, retrieval/check timestamps, HTTP validators, extraction state, permitted artifact reference, expiry/deletion state; versions do not overwrite prior content |
-| `evidence_passages` | source version FK, excerpt, section/offset/page locator where supported, normalized text hash, extraction version; bounded permitted evidence |
-| `claims` | company/entity subject, predicate, typed value, unit/currency, period/as-of/effective dates, geography, statement class, derivation, verification status, confidence reasons, source origin, freshness metadata, superseded-claim FK |
-| `claim_evidence` | claim FK, passage FK, relationship (`supports`, `contradicts`, `qualifies`), directness/authority/independence assessment and reason |
-| `research_runs` | company nullable for sourcing, parent run, type/profile/mode, mandate/scope, as-of/cutoff, state, stop reason, budget snapshot, spent/reserved counters, model/prompt/config versions, immutable input/output manifests, lease/heartbeat/cancellation timestamps |
-| `research_questions` | run FK, company, question, importance tier, status, search strategy/attempts, missing-data reason, next diligence action, evidence links |
-| `theses` | run/company, versioned current view, strengthening conditions, weakening conditions, linked evidence/dependency manifest, review state |
-| `thesis_dependencies` | thesis FK, proposition that must be true, materiality, support status/reason, supporting and contradicting claim IDs, missing evidence, disconfirming question |
-| `calculations` | run/company, formula/version, exact input claim IDs or explicit assumptions, units/periods, result, validation state and explanation, execution version |
-| `memo_versions` | company/run, structured content, exact claim/calculation/thesis manifest, generated and cutoff times, author/review state, previous-version FK, export metadata |
-| `analyst_corrections` | original claim/relation reference, proposed replacement/classification, reason, actor/time, accepted/superseded state, scope and affected analysis references |
-| `operations` | run/company/task, provider/model/version, idempotency key, cache key, state, attempt, reservation, usage, estimated/reported cost, latency, timestamps, error, output reference |
-| `run_events` | run FK, event type/time, actor, operation/entity reference, bounded diagnostic payload; append-only audit/progress events |
+| `companies` | Canonical domain/name and mode, safe exact deduplication, first seen; no fuzzy automatic merges |
+| `source_documents` | URL, publisher, rights and retention policy; source identity |
+| `source_versions` | Document FK, content hash, dated observation metadata and optional permitted local content reference |
+| `evidence_passages` | Version FK, exact excerpt and locator |
+| `claims` | Company FK, typed claim payload, as-of date; never silently overwrite inputs already cited by a saved analysis |
+| `claim_evidence` | Claim/passage FKs, supports/contradicts/qualifies relation and claim-specific quality reasons |
+| `research_runs` | Input/config snapshot, kind/mode/status, timestamps, stop reason, budget, retained structured outputs and input manifest |
+| `operations` | Run FK, unique operation key, cache key/expiry, reservation, status, usage/cost and reusable result reference |
+| `memo_versions` | Company/run FKs, structured memo plus frozen claim/calculation manifest, generated/cutoff dates; append-only saved versions |
 
-Funding, launches, partnerships and other signals initially use event claims with structured payloads (`event_type`, event date, announced date, date basis, amount/currency when reported). Do not add a second inconsistent event truth store. A later high-volume event table must preserve this provenance.
+Only identity, lookups, joins, status/cost and integrity-critical fields need relational columns; remaining Step 1 Pydantic data can be stored as validated JSONB. Do not collapse sources, passages and claims into one undifferentiated memo blob.
 
-Company detail pages are derived projections from claims, relationships and accepted corrections. They display the underlying observation date. A new observation can supersede an old one for the current view without erasing it.
+Analysis, thesis, questions and calculation records may initially be typed run-output snapshots. The finance step adds any genuinely needed calculation query/index/schema extension when used. Cross-reference validation must still ensure saved calculation/claim manifests resolve within the correct mode; JSONB does not waive integrity checks.
 
-### Integrity, matching and indexes
+No separate generic entities, relationship history, correction-event store, run-event bus, graph tables or lease table in Step 2. Existing relationship/correction contracts stay in source for future use. A future analyst edit creates an explicitly labeled revised output and retains its cited input; no elaborate correction propagation engine.
 
-- Enforce uniqueness on normalized primary domains where identity is unambiguous, provider identifiers within provider/namespace, operation idempotency keys, and claim–passage relationship tuples.
-- Do not merge companies based only on name similarity. Registrable domains are useful hints, not infallible identities: products, groups, subsidiaries and renamed companies need review.
-- Ambiguous candidates remain separate until resolved. MVP automatic company merging is limited to safe exact identifiers; manual merging with complex history is deferred.
-- Index claims by company/predicate/as-of date; versions by document/hash; relations by subject/predicate and object; runs by state/lease and company/created time; operations by run/task and cache identity.
-- Accepted corrections override the current interpretation, not source text. Rejection or new evidence produces a review event; refreshing cannot silently erase an accepted correction.
-- Memo manifests freeze claim versions and calculation inputs. Keep memo drafts separate from accepted/reviewed outputs.
-- Generated analysis does not count as independent primary evidence for another company. Reuse its underlying evidence with permissions and freshness checks.
+Cache lookup uses exact successful operation keys, content hashes, relevant model/prompt/schema versions, mode and rights scope. Never reuse restricted/expired content. The same URL can have multiple retained source snapshots; this is citation integrity, not a full company timeline product.
 
-## C. Final research workflow
+## C. Research and sourcing behavior
 
-### Live sourcing
+### Sourcing (Step 6)
 
-1. Validate a bounded mandate and reserve the run budget.
-2. Query existing companies/claims with deterministic filters.
-3. Perform **fresh external discovery at query time** using the search adapter and permitted public sources, regardless of whether database matches exist.
-4. Retrieve a bounded number of relevant result pages, resolve entities and deduplicate company candidates and source origins.
-5. Apply known hard filters; unknown criteria remain unknown rather than failing or passing silently.
-6. Perform lightweight enrichment and cheap classification only when needed. Apply both a total sourcing budget and a per-candidate cap; reaching a candidate cap does not create a full research run.
-7. Return an explained shortlist and record new companies/new evidence for existing companies.
-8. Require the user to select a company and start Research before substantive analysis.
+Validate mandate → search stored candidates AND issue fresh external search → resolve/deduplicate → bounded retrieval/light enrichment → code filters and cheap classification only when needed → explained shortlist → save useful evidence → user selects ANALYZE.
 
-Each card shows matched/unknown/mismatched criteria, recent evidenced signals, event/announcement date with date basis, discovered date, links to evidence, and Quick Scan/Research actions. Distinguish document count from independent source count. A “found today” timestamp is not a claim that the company launched today.
+Cards expose company, sector, stage/geography where evidenced, matched/unknown criteria, recent signal and date basis, discovery time, why surfaced, and sources. Initial signal windows are 7 days, 30 days and all history; 24/90-day controls can follow without changing semantics. Filters concern events/announcements, not the startup's founding date. Unknown dates do not satisfy a strict recency filter.
 
-Every live sourcing run attempts fresh discovery. Short-lived request coalescing is permitted for duplicates within a run or concurrent identical requests, but yesterday's cached results do not satisfy today's live-discovery requirement. When the provider is unavailable, show **partial results: existing knowledge only; fresh discovery failed**. Never relabel those results as fresh.
+A database-only result cannot satisfy a live sourcing request. If external search fails, show partial existing results with “fresh discovery failed.” Search indexing and source access mean yesterday's startup is discoverable in principle, not guaranteed to be found. Do not promise exhaustive coverage.
 
-MVP signal-window choices: last 7 days, last 30 days, all relevant history. Architect timestamp semantics for 24-hour and 90-day options later. Windows filter the relevant event or explicitly labeled announcement date, not company founding date or retrieval time. Unknown-date results appear separately and do not count as meeting a strict recent-event filter. Search-engine date filters are hints that require evidence validation.
+### Company analysis (Steps 3–5)
 
-Source indexing delays and inaccessible sources prevent a guarantee of surfacing a company that launched yesterday. The acceptance promise is a fresh discovery attempt and the ability to ingest unseen companies, not universal or real-time coverage.
+Resolve company name/URL → load relevant prior evidence → perform fresh targeted external search for material developments → retrieve permitted sources → clean and extract relevant passages/claims → cross-check → VC analysis and thesis dependencies → deterministic finance and eligible valuation → targeted skeptical validation → founder questions → cited memo.
 
-### Selected-company Research (Standard profile)
+A newly requested live analysis must attempt fresh external discovery even if cached evidence exists. “Open saved analysis” is a separate zero-research action and keeps its old as-of date. Same-run query deduplication and reuse of unchanged extraction are permitted; prior-day search replay cannot be labeled a fresh pass.
 
-1. Normalize URL, verify company identity, and load existing evidence, corrections and relevant relationships.
-2. Determine applicable template and material research questions.
-3. Assess missing/stale evidence and decide reuse versus targeted retrieval.
-4. Search and retrieve within the central budget.
-5. Extract atomic claims with passages and qualifiers; apply deterministic validation.
-6. Cross-check material claims and identify contradictions, dependent sources and evidence gaps.
-7. Produce preliminary thesis dependencies; perform targeted disconfirming searches on weak material dependencies if budget allows.
-8. Run permitted calculations when compatible inputs exist.
-9. Produce structured analysis, Why Now, coverage, founder questions, and what would change the view.
-10. Perform a skeptical review and citation/numerical validation.
-11. Render a versioned memo draft with an as-of date, evidence cutoff and limitations.
-12. Let the analyst inspect, correct, edit and export. A revision does not automatically launch new paid research.
+Funding, launches, customers/partnerships, geography, management changes, regulation, market shifts and competitors are investigated when material. Negative searches target the weak assumptions of the thesis, not a rote list of allegations. Evidence must retain attribution and caveats.
 
-Stop on sufficient evidence for the scope, budget/time exhaustion, diminishing relevant evidence, inaccessible sources or a private-information dependency. Save all useful evidence before reporting a partial result. Unsupported memo statements must be removed, qualified or converted into questions before export; exporting a partial draft is permitted when visibly labeled.
+The system returns a partial dossier on budget exhaustion, source failure or private-information gaps. Supported recent findings remain usable without a complete memo. A missing retention figure is not evidence of poor retention.
 
-### Analyst outputs
+## D. Controlled analytical workflow
 
-The dossier and concise memo share a structured document schema: executive summary; company/product/problem; customer and business/revenue model; founders and relevant experience; funding; traction; market/competition; Why Now; thesis and dependencies; reasons to investigate/caution; unknowns and conflicts; founder questions; further diligence; sources. Sections adapt to relevance and coverage.
+Use a few task roles, not separately autonomous agents. Planning and extraction may share a bounded orchestration function while keeping their input/output contracts. VC interpretation, skeptical validation and memo writing remain logical stages so they can be evaluated independently. Finance is a deterministic service, not an arithmetic agent.
 
-Why Now separates dated company events from market changes, then labels the connection to the opportunity as an inference. Recent funding alone does not establish attractive timing.
+Model calls occur only where semantic interpretation adds value. Code handles matching, filtering, dates, caching, hashes, sorting, transformations, arithmetic, validation, budget admission and citation rendering. Pass relevant structured claims and short excerpts to analysis rather than repeated whole webpages/dossiers.
 
-Founder questions are derived from actual material gaps. Each question explains why it matters and what evidence would answer it. The initial memo includes qualitative strengthening/weakening conditions; numerical bull/base/bear models remain deferred.
-
-## D. Final agent workflow
-
-Agents are bounded task roles, not independently spending services. Initially use one provider and shared task infrastructure.
-
-| Role | Input → output | Boundaries |
-|---|---|---|
-| Planner | Scope, reusable claims, missing information → prioritized questions and queries | Medium tier; capped planning/follow-up rounds; cannot alter budgets |
-| Classifier/extractor | Relevant cleaned passages → typed labels and atomic claims | Cheap/medium tier; exact evidence links; may abstain |
-| Analyst | Structured relevant claims, calculations and uncertainties → thesis/dependencies and interpretation | Strong tier only where benchmarked benefit warrants it; no arithmetic or invented data |
-| Skeptical reviewer | Weak dependencies and evidence → material challenges and targeted search proposals | Medium/strong; challenges do not become facts without evidence |
-| Memo writer | Validated analysis and evidence manifest → document schema | Medium by default; no new facts from model memory |
-
-Code handles queries, filters, matching, URL normalization, duplicate detection, dates, cache decisions, budgets, calculations, sorting, citation rendering and workflow transitions. The analyst receives relevant structured claims and short supporting passages, not tens of complete webpages.
-
-A planner's priority state plus deterministic heuristics controls marginal value of information: prioritize an unanswered material question with an untried credible source strategy; stop repeated unproductive queries and searches that do not affect a material conclusion. Do not buy an extra model call merely to decide whether to buy another call.
+The planner records material unanswered questions. Deterministic stopping rules decide whether an additional call has plausible value: untried credible source, important missing answer, budget remaining. No extra LLM call just to decide whether another call is worthwhile. All follow-up loops and output tokens are bounded.
 
 ## E. Evidence architecture
 
@@ -231,30 +154,17 @@ Use typed nullable values plus explicit reasons, never zero, an empty string or 
 
 Record search attempts and scope on the question. A sparse memo can be a valid result if limitations are explicit and founder questions are useful. Lack of public retention data is not evidence of poor retention. A budget-limited search cannot assert the information does not exist.
 
-## G. Cost-control architecture
+## G. Simple cost-control architecture
 
-All external paid activity goes through a single operation gateway. Provider adapters cannot make unmetered calls. Budget checks are server-side and cannot be changed by the model.
+Keep hard limits on search requests, documents/bytes, follow-up rounds, LLM calls, strong-model calls, tokens, estimated spend and elapsed time. Default live execution remains disabled. Credentials never imply permission to spend.
 
-Each run has limits for search requests, retrieved documents and bytes, follow-up rounds, LLM calls, strong-model calls, input/output tokens, estimated monetary spend and wall time. Add operator-wide daily/monthly estimated-spend limits and a configurable live-concurrency limit so many bounded runs cannot create an unbounded total.
+One central operation gate is mandatory before paid adapters are introduced. For each potentially billable attempt: check mode/config and eligible cache → estimate a conservative reservation → persist it and verify run plus simple operator spend ceiling transactionally → make one bounded call → record usage/outcome. Retries need their own reservation; default to no automatic retry for ambiguous billed failures. Unpriced operations fail closed. Bound provider output and timeout before dispatch.
 
-### Reservation and reconciliation
+One-run-at-a-time admission removes the need for a distributed billing architecture but does not justify in-memory-only spend counters. Persist counters/operation rows so a restart cannot silently reset allowance. A single UTC daily ceiling is sufficient initially; retain the existing monthly-limit field but do not build a monthly billing subsystem. Any nonzero configured monthly ceiling must either be enforced by a simple ledger sum or explicitly rejected as unsupported—never silently ignored.
 
-1. Check permissions, cache and duplicate in-flight operation before paying.
-2. Estimate an upper-bound reservation using the versioned provider rate card, known input size and enforced output limit. Include provider billing categories where applicable.
-3. Atomically lock/update the run AND global budget counters in PostgreSQL. Deny admission if spent plus reserved plus this operation exceeds any limit.
-4. Execute with timeout, bounded retries and an idempotency key when the provider supports one.
-5. Record usage, latency and result; reconcile the reservation against observed billing units.
-6. On timeout/unknown billing outcome, retain a conservative charge/reservation. Do not assume the attempt was free or automatically repeat a possibly billed operation.
+On unknown timeout/billing outcome retain the conservative reservation; operator inspection is required before retry. Do not claim exactly-once external calls. Cancel stops new calls; in-flight provider charges may still apply. Exhaustion saves useful work and gives a clear partial-result reason. Rendering existing results is deterministic and does not require a final model call.
 
-Count failed calls and retries when potentially billable. A worker restart must not lose reservations or repeat an already committed result. Providers may not support exactly-once calls; ambiguous outcomes are explicit and retries remain bounded.
-
-The application caps admitted work against a conservative **estimate**, not the provider's final invoice. Pricing changes, delayed accounting and in-flight charges can create discrepancies. Use provider-side spending limits where offered, disable automatic top-ups by default, and treat unpriced paid operations as blocked until a rate card exists. No guarantee of an exact invoice cap without provider support.
-
-On exhaustion: stop launching operations, save results, show **Partial research — configured [limit] reached**, and provide the completed dossier. Cancellation prevents new work and attempts to cancel in-flight work without promising a refund. Reserve finalization capacity when practical; a deterministic partial-result renderer is available even if no model budget remains.
-
-### Built-in efficiency
-
-Deterministic filtering and preprocessing; normalized query/source deduplication; HTML cleaning; relevant-passage selection; bounded contexts; claim/evidence reuse; incremental retrieval; versioned extraction cache; task routing; output-token limits; batching only compatible independent work with traceable per-item outputs; no repeated whole-dossier prompts; no automatic deep research; no repeated synthesis when inputs have not changed.
+This is application admission against estimates, not an exact invoice guarantee. Keep provider-side spend controls where available and no automatic top-ups. Rate-card version and estimated versus reported usage/cost remain visible. No subscription billing, payment system, distributed quota service, background invoice reconciliation or production cost dashboard.
 
 ## H. Model-routing architecture
 
@@ -274,168 +184,116 @@ Do not silently escalate to a more expensive model. Every escalation needs an al
 
 Benchmark task-specific support precision and abstention against cost. Exact model names and monetary profile prices are implementation configuration, not architecture. Record returned model revision where available; mutable aliases limit reproducibility and must be disclosed.
 
-## I. Freshness, caching and refresh architecture
+## I. Freshness and lightweight reuse
 
-Separate `published_at`, `retrieved_at`, `first_seen_at`, `last_checked_at`, `last_verified_at`, and the actual observation/event/effective date. A successful fetch is not claim verification. Unknown publication dates remain unknown.
+Fresh external search is mandatory for each newly requested live sourcing or company-analysis run. Cache supplements it; an explicit open-saved-analysis action does not perform research. No scheduled refresh, background polling or automatic monitoring.
 
-### Initial freshness policy
+Keep publication, observation, retrieval, discovery and verification timestamps distinct. Re-fetching a 2023 revenue statement today does not make its revenue current. Historical funding events remain historical; “latest funding” needs a fresh completeness check. Unknown dates remain unknown.
 
-These are configurable operational starting points, not statistical truth/confidence scores. Age comes from the relevant observation or effective date when available. A recent fetch of a historical metric cannot make it current.
+Within a run, deduplicate queries and source URLs. Across recent runs, reuse permitted unchanged source extraction keyed by content hash + extractor/task/prompt/schema/model revision + context when company-conditioned + mode/rights scope. Use exact matches initially. Reuse analysis only when its exact relevant evidence/assumption/config manifest is unchanged and it is displayed with its actual as-of date.
 
-| Claim family | Initial refresh behavior |
+Step 2 supplies a simple expiry and successful-result lookup. Source-specific TTL policy and conditional retrieval are added with actual adapters in Step 3. The elaborate v1 freshness/decay machinery, dependency invalidation graph and historical “what changed?” UI are deferred. Preserve prior saved memos and evidence snapshots; no automatic deletion/replacement of cited inputs.
+
+## J. Two-case demo strategy
+
+Demo mode uses the same domain/provider contracts but no external network or credentials. Every screen/export says DEMO, identifies synthetic or permitted fixture data, and shows evidence dates. Unsupported demo inputs abstain. Live failures never switch silently to demo. Demo/live persistence and cache entries are separated by mode.
+
+| Narrative | Demonstrate |
 |---|---|
-| Founding/incorporation dates, founder identities | Historical observations; revisit on conflict or identity correction, no routine expiration |
-| Current executive roles | Recheck around 90 days or earlier when departure evidence appears |
-| Historical funding event | Event remains historical; check completeness of “latest funding” around 30 days |
-| Headcount and hiring | Current-state views age after roughly 30 days; do not infer headcount from job postings |
-| Pricing and current customer references | Recheck around 30 days; logos never automatically mean active paid customers |
-| Product/competition | Recheck around 60 days or on a relevant event |
-| Market estimates | Preserve base year and methodology; review around 180 days or sooner for material change |
+| A: Early-stage startup | Fresh-discovery replay; fragmented evidence; team/product/market/competition/Why Now; funding/traction; unknown retention, burn and ARR; useful founder questions; explicit financial/DCF refusal |
+| B: Mature private/growth company | Richer evidence or clearly labeled synthetic/analyst assumptions; growth/retention/margin/burn metrics; comparable rationale; valuation scenarios; qualified DCF and sensitivity; evidence-linked financial interpretation |
 
-Fresh/aging/stale derive from the family policy, with aging beginning at the configured review interval and stale at a separately configured threshold (initially twice that interval). Unknown observation age yields unknown freshness. Stable historical facts are labeled historical, not falsely “fresh.” Analyst overrides are recorded. Dependency changes can trigger reconsideration before a scheduled interval.
-
-### Cache identity and reuse
-
-- Raw retrieval: canonical URL + access-policy scope + representation/headers; conditional HTTP requests where supported; versions by content hash.
-- Source extraction: normalized content hash + extraction task + extractor/prompt/schema versions + provider/model revision + relevant language/options + permission scope. Exclude company ID for genuinely source-only extraction to enable safe reuse.
-- Company-conditioned classification/extraction: additionally include resolved company identity and relevant context hash.
-- Analysis/memo: sorted exact claim/calculation versions + accepted correction version + question/scope/profile + as-of semantics + model/prompt/schema versions. A changed input invalidates dependent output.
-- Search: normalized query + provider + geography/language + event window/cutoff + options. Reuse within the active discovery window; a cached prior run does not replace a mandatory fresh sourcing attempt.
-
-Use exact version matches initially. A future compatibility declaration may permit cross-version reuse only after evaluation; never assume two prompts/models are compatible. Cache negative results briefly and separately from successful evidence. Errors are not durable evidence of absence.
-
-Permission/retention rules override caching. Restricted source content cannot be retained or shared merely because its hash matches. Caches for confidential or different authorization scopes must not mix. MVP public evidence is reusable only inside the permitted local workspace.
-
-### Refresh
-
-Refresh is an explicit user action with its own budget. Load accepted corrections and previous evidence; identify missing/stale predicates; check changed sources; search for new relevant events; reuse unchanged permitted extraction; produce new observations and memo versions.
-
-MVP change summary: added/changed observations, old versus new dates/values, and affected thesis dependencies/sections marked “needs reconsideration.” No automatic overwrite of analyst conclusions. Rich historical comparison charts are deferred.
-
-Every memo records generated time, research as-of time, evidence cutoff, and exact input manifest. A present-day run with old sources is not a backtest. Historical as-of research cannot claim to exclude future knowledge unless source availability at that historical cutoff is actually established.
-
-## J. Demo strategy
-
-Provide an offline fixture mode through the same provider interfaces and domain workflow, with no external network requests, credentials or paid calls. Bundle a small set of synthetic or explicitly redistributable company/source/evidence fixtures and pre-generated model outputs.
-
-Include four curated cases: well-supported software company; sparse financial/retention evidence; conflicting sources; old/new evidence for refresh. One discovery fixture must introduce a company absent from the starting database.
-
-The UI and every export display **DEMO — fixture data, not live research**, with a fixed evidence date. Cost displays say simulated/recorded fixture usage, never claim live spend. The UI supports discovery, selection, evidence inspection, correction, memo export and a scripted refresh. Arbitrary URLs or questions outside fixtures explain the limitation instead of pretending to research them.
-
-Keep demo and live data in separate namespaces or separate local databases so fixture evidence cannot enter a live memo. In offline mode all provider calls are denied by policy and tested. Failure in live mode never silently switches modes. Any demonstration timing is labeled replay, not represented as live computation.
+Keep all four Step 1 development fixtures unchanged as regression tests. Add the two richer narrative bundles when their analytical steps are built. Case B must not silently reuse invented values as facts about a real company. Analyst-entered assumptions are typed/labeled, not private-document ingestion. No live access is necessary to show the offline financial model.
 
 ## K. Evaluation strategy
 
-Create roughly 20–30 manually annotated cases with an initial smaller development subset and a held-out set. Cover company identity ambiguity, shared domains, sparse information, stale metrics, conflicts, syndicated announcements, negative evidence, source failures, budget exhaustion and prompt injection. Store fixture rights and provenance.
+Continuous offline tests remain mandatory. Keep synthetic development fixtures and add gold-standard numerical examples, financial missing-input/refusal cases, unit/period mismatches, valuation eligibility cases and sensitivity checks. Manually review claim support and founder-question usefulness on a small disclosed real/permitted evaluation set as live research becomes available.
 
-Compare a simple one-pass research baseline with the proposed workflow using the same source/time scope. Use human review of material claim support, completeness of important unknowns, and founder-question usefulness; an LLM judge alone is insufficient.
+Compare a simple one-pass baseline using the same sources/scope. Measure citation coverage separately from support precision; qualification precision within a defined search universe; conflicts/abstention; analyst edits; latency; and cost per sourcing, analysis, memo and fresh rerun. Compare cheap/strong task models only through opt-in bounded evaluations. No claimed per-run price or professional accuracy without measurements.
 
-Measure:
+The previously suggested 20–30 cases remains a growth target, not a reason to delay a visible prototype. Publish case counts, provenance and limitations. The target of at least 95% human-supported sampled material claims remains a quality target, not a claim that the current 79 structural tests demonstrate it.
 
-- Material-claim support precision and citation coverage separately.
-- Known-material-question coverage, conflict detection and correct abstention.
-- Entity resolution precision; shortlist qualification precision on a defined source universe, not unmeasurable global sourcing recall.
-- Incremental refresh correctness and unnecessary repeated operations.
-- Reviewer time and edits needed to obtain a usable memo.
-- Cost per sourcing query, Quick Scan, Standard Research, refresh and memo-only regeneration; Deep Research once implemented.
-- Per-task model quality/cost and cold-cache versus warm-cache latency/cost.
+## L. Revised implementation sequence
 
-Persist benchmark configuration, model/prompt/rate-card versions, timestamps, cached/live designation, usage and failure counts. No claimed cost-per-run until measured. Optimize quality per dollar subject to a minimum evidence-quality threshold, not minimum spend at any quality.
+1. **Contracts and fixtures — complete:** retain approved Step 1 and its tests.
+2. **Minimal Runtime and Persistence:** minimal local PostgreSQL, run/operation storage, sequential explicit runner, hard cost limits, safe config, fixture-backed execution, minimal artifact/cache handling. Exact plan: [STEP2_PLAN.md](docs/STEP2_PLAN.md). Stop for review.
+3. **Live Research and Evidence:** one fresh search provider, safe retrieval/cleaning, passage/claim extraction, identity resolution, targeted/disconfirming research, validated dossier/backend representation. Opt-in live credentials and budgets required.
+4. **VC Analysis + Financial Modeling:** company/market/competition/Why Now/risks/questions; deterministic metrics; market sizing; method eligibility; comps/scenarios; DCF/sensitivities when supported. Deliver in tested sub-slices, not one giant financial module.
+5. **Investment Memo:** cited memo, financial/valuation sections, explicit unknowns, skeptical validation and Markdown export.
+6. **Fresh Startup Sourcing:** mandate, fresh discovery, deduplication, lightweight qualification, Why This Surfaced, company selection; card-ready data.
+7. **Demo UI:** focused React/Vite sourcing, analysis, evidence, financial assumptions/results, valuation, memo and progress/error views. No large SaaS shell.
 
-## L. Implementation sequence
-
-1. **Contracts and fixtures:** approve this specification; implement typed schemas, a small annotated fixture corpus, provider contracts and calculation definitions. Define what counts as a material claim.
-2. **Persistence and control:** migrations, run lifecycle/leases, operations ledger, budget reservations, local artifact policy, offline enforcement and tests.
-3. **Evidence vertical slice:** permitted source retrieval, cleaning, passages, claim extraction/validation, evidence viewer and identity resolution.
-4. **Selected-company research:** bounded planner, coverage/unknowns, thesis dependencies, targeted disconfirmation, memo schema, citations and Markdown export.
-5. **Narrow fresh sourcing:** database plus external discovery, event-window handling, qualification cards and explicit research selection; no automatic candidate analysis.
-6. **Knowledge reuse:** corrections, exact cache identities, freshness policies, incremental refresh, simple change/dependency summary.
-7. **Demo and usability completion:** curated offline end-to-end paths, clear errors, cancellation, usage breakdown and export labels. Demo fixtures are used from step 1, not invented at the end.
-8. **Evaluation and hardening:** held-out quality/cost assessment, retry/recovery/security tests, documentation and reproducible setup. Select default task models using measured results.
-
-Each step must leave a working, testable slice. No paid provider expansion or advanced modeling until MVP gates pass. Feature implementation begins only after user approval.
+Tests accompany every component; each step ends with a reviewable result. No calendar estimates are implied. Backend/CLI milestones precede the polished interface; do not claim a terminal result is the completed visual demo.
 
 ## M. Testing strategy
 
-| Test layer | Required cases |
-|---|---|
-| Unit/property tests | URL/date normalization, deterministic filters, source/query deduplication, freshness boundaries, cache invalidation, units/periods, zero/negative/missing metric inputs |
-| PostgreSQL integration | Atomic concurrent budget reservations, parent/global limits, unique operation keys, leases/recovery, correction precedence, frozen memo references |
-| Provider contract tests | Pagination/truncation, malformed outputs, rate limits, unknown charges, timeouts, retry accounting; recorded/synthetic responses by default |
-| Research tests | Wrong entity, unsupported claims, conflicts, missing dates, qualification unknowns, targeted negative evidence and no new information stopping |
-| End-to-end | Discover unseen fixture company → select → dossier → evidence → correction → export → refresh |
-| Security | SSRF including redirect/DNS changes, unsafe URL protocols, response limits, hostile page instructions, output sanitization, no frontend secrets |
-| Offline tests | Network denied, no credentials required, no live/demo mixing, all exports labeled |
-| Failure tests | Worker crash after reservation/before response/after commit; preserve results and account for possible charges without infinite retry |
+Preserve the offline unit/contract suite. Add local PostgreSQL integration tests in Step 2 with dedicated test configuration; do not substitute SQLite for database behavior. An explicitly requested integration suite fails clearly when PostgreSQL is absent rather than silently passing/skipping. No paid endpoints in default tests.
 
-CI runs deterministic fixtures and calculations; paid live evaluations are opt-in with explicit budgets. Do not use a paid LLM test suite on every commit. Validate Markdown citation integrity; PDF visual testing begins only when PDF is implemented.
+Step 2 tests persistence/restart visibility, mode isolation, reference integrity, exact deduplication, cache permissions, single-run lock, durable reservations, cap boundaries, idempotency keys, interrupted/unknown operations, cancellation and safe local artifact paths. Recovery means reporting retained partial state, not auto-resuming jobs.
 
-## N. Expected external services/API dependencies
+Later tests cover source date meaning, unsupported/contradictory claims, SSRF/redirect/IP checks, untrusted content, deterministic formulas, incomparable metrics, missing inputs, valuation refusal, DCF sensitivities, citations and offline UI journeys. Live benchmarks stay opt-in and budgeted. Dependency installation may access registries; research tests do not call live providers.
 
-| Service/action | Initial dependency | Can remain free/local? | Cost treatment |
-|---|---|---|---|
-| PostgreSQL/API/worker/frontend | Docker/local processes | Yes, excluding the operator's hardware | No API charge |
-| Search | One adapter, initially evaluate Tavily | A provider free allowance may cover small experiments; not guaranteed forever | Meter every request/credit; current rate card at setup |
-| LLM inference | One configurable provider | Offline fixtures need none; live inference normally requires credentials and a usage allowance/payment | Input/output and other billable categories, reserved before dispatch |
-| Website retrieval | Controlled HTTP client | Usually no per-call API fee; access rules still apply | Meter requests/bytes/time; any paid extraction adapter is separate |
-| Registry data | Optional geography-relevant official adapter after core path | Some official APIs/open data are free; keys/rate limits may apply | Do not make all registries prerequisites |
-| Artifact storage | Local filesystem | Yes | Hosted storage and egress deferred |
-| Exports/calculations | Local deterministic code | Yes | No LLM call just to render/export |
-| Refresh | User initiated | Cache reuse can avoid calls; fresh checks may still be required | Separate bounded run, not assumed free |
-| Memo regeneration | Reuse if inputs unchanged; render-only otherwise | Rendering local; changed synthesis may invoke a model | Separate operation attribution, no hidden re-research |
-| Hosted deployment | Not required for interview demo | Local demo works without hosting | Any later hosting cost documented before deployment |
+## N. External dependencies
 
-The MVP needs no Crunchbase, Dealroom, PitchBook, vector service, paid observability service or browser-rendering service. Do not bypass blocked websites to avoid a provider fee. Search plus one model provider are the only mandatory external capabilities for live general research; free/public data does not imply zero inference cost.
+Local PostgreSQL; Python/Pydantic with SQLAlchemy/Alembic and a PostgreSQL driver at Step 2; one search provider and one model provider at Step 3; FastAPI for local API delivery; React/Vite at Step 7. No live network adapter or model/search SDK is necessary in Step 2. No LangGraph, Redis or cloud storage dependency by default.
 
-## O. Services that can initially remain free/local
+Public/free sources and documented APIs remain preferred. Company/investor websites and funding announcements support attribution; public registries support relevant legal/filing facts. Media, accelerator directories and job signals require access checks and precise interpretations. Proprietary startup databases are optional later adapters, never prerequisites. Retention/model-processing/export rights must be checked independently.
 
-Run the frontend, API, worker, PostgreSQL, artifact storage, calculations, exports, tests and demo locally. The offline demonstration has no API dependency. Official public-data APIs and search allowances can reduce live costs, subject to their current terms and limits. A local model is an optional future adapter, not a promise of equivalent quality or a mandatory hardware requirement.
+## O. Free/local operation
 
-## P. Actions that may incur API cost
+The local app, PostgreSQL, fixtures, calculations and export rendering can run without paid services. Search free allowances may support small experiments but are not assumed unlimited or permanent. LLM inference and some live search/data services may cost money. Hosting is not required for the interview demo.
 
-Live discovery, uncached model classification/extraction, planning, analysis, skeptical review and changed memo synthesis can incur charges. Refresh may involve new searches, retrieval services or inference even when most evidence is reused. Retries and failed/timeout calls may also be billed. Selecting or reading an existing dossier, editing a correction, deterministic calculation, and rendering an existing export do not themselves require a paid call. Reanalysis after a correction is an explicit action, never a hidden side effect.
+## P. Potentially billable actions
 
-## Q. How costs will be measured and capped
+Fresh search, uncached extraction/classification, planning, analysis, skeptical review and changed memo synthesis may incur cost, including potentially billed failed/retried attempts. Opening saved results, deterministic financial calculations, inspecting assumptions/evidence, and rendering existing exports require no LLM. Changing assumptions reruns code; interpretation regeneration is a separate explicit action.
 
-The operations ledger records provider, model/revision, task/operation, company, run, attempt, cache hit, input/output tokens, search calls, documents/bytes, estimated cost, provider-reported usage/cost when available, rate-card version, latency and timestamp. Unknown cost remains unknown and conservatively reserved, not zero.
+## Q. Cost measurement
 
-Show a basic per-run breakdown for search, extraction/classification, planning, analysis, skeptical review and memo, plus total estimated cost. Shared sourcing work stays charged to the sourcing run rather than being duplicated across each candidate. Refresh/memo-only runs have separate accounting. Counterfactual “savings” are optional and must not be presented as actual money saved.
+Record task, provider/model/version, run/company, operation/attempt, cache hit, request limits, tokens/search requests/documents, rate-card version, reserved/estimated/reported cost, latency/time and outcome. A basic per-run breakdown is enough. Unreported usage/cost must not silently mean zero. Avoid charging the same shared sourcing work to every company. All caps apply before dispatch; no research may continue spending after a cap.
 
-Profile numeric limits will be calibrated with bounded development runs. No hard-coded monetary prices or promised run costs. Live execution is blocked until explicit operator limits and a usable rate card are configured. Keep provider-side limits enabled where available.
+## R. Portfolio Demo MVP acceptance criteria
 
-## R. MVP acceptance criteria
+1. The unchanged Step 1 contract suite remains passing; later changes preserve fixtures or introduce explicit version migration tests.
+2. Step 2 survives a normal stop/restart with inspectable saved cases and operation costs. Duplicate runners are rejected. Interrupted work never resumes paid activity automatically.
+3. Every new live sourcing and company-analysis run attempts fresh external discovery. Cached-only fallback is explicitly partial. A test surfaces a previously unseen company.
+4. Sourcing remains lightweight; no substantive research without user selection. Cards explain matches/unknowns, evidence, event date basis and why surfaced.
+5. Material factual memo claims resolve to evidence and preserve attribution/qualifiers. Unknowns/conflicts are visible; independent human support precision is measured rather than inferred from passing schema tests.
+6. All financial arithmetic uses tested code with typed units, periods, definitions and lineage. Missing or incompatible inputs yield a reason and blocked analyses, not invented values.
+7. Case A refuses an unsupported DCF. Case B demonstrates deterministic metrics, at least one justified multiple/scenario model, and DCF plus sensitivities using explicitly eligible inputs. Comparable choices expose similarities and limitations.
+8. Market sizing separates reported estimates and calculated assumptions, uses a defined customer universe and time/geographic scope, and never fills SOM with an arbitrary percentage.
+9. Budget/time/token/call limits, daily guard, ambiguous-charge behavior and disabled-live defaults pass offline tests. No invoice precision or cost claims without evidence.
+10. Both narrative demos run offline without keys and remain labeled. Live failure does not substitute fixture data. The final UI makes sources, assumptions, missing information and failures easy to inspect.
+11. Saved memos retain an as-of date, evidence cutoff and input manifest. Where retention prevents exact reproduction, disclose it.
+12. Normal local VS Code setup/run/test/stop commands are documented. No public deployment, monitoring service or remote push without separate authorization.
 
-These are release gates/targets, not claims about an existing system. Publish benchmark sample sizes, annotation criteria and limitations alongside results.
+## S. Financial modeling and valuation — core MVP
 
-1. A live sourcing run attempts an external discovery request even when the database contains matches; a test introduces and surfaces an unseen company. A failed fresh search produces a visibly partial result.
-2. Every shortlisted candidate explains known matches, unknown criteria and surfaced signals with source links and date basis. Strict event windows do not pass unknown-date results.
-3. Sourcing 100 candidates cannot enqueue 100 Standard/Deep runs. Research starts only after explicit user selection/action and budget admission.
-4. The selected-company path produces a persisted dossier and editable memo draft with coverage, thesis dependencies, material unknowns, disconfirming analysis and founder questions.
-5. All material factual memo statements have resolvable evidence links; at least 95% of sampled material statements are judged supported in the held-out human review. Citation presence alone does not satisfy this gate.
-6. No fabricated financial values in the evaluation corpus. All calculated values use registered formulas and compatible evidenced/explicitly assumed inputs. Missing data remains typed and visible.
-7. All seeded critical conflicts and wrong-entity cases are surfaced or safely abstained on in the deterministic acceptance suite. Report broader benchmark performance separately.
-8. Concurrent requests, retries and worker restarts cannot bypass run/global admission limits. Exhaustion returns partial work and stops new paid calls; ambiguous billed attempts remain accounted for.
-9. An unchanged source with identical compatible task versions reuses extraction. A changed passage/correction invalidates affected analysis. An expired source permission prevents reuse.
-10. Refresh preserves the previous memo, keeps observation dates honest, respects accepted corrections, and identifies changed evidence/affected dependencies.
-11. Offline demo completes its supported workflow without network access or credentials; all screens/exports identify fixture mode and evidence dates.
-12. The operations ledger reconciles application requests to reported usage within documented provider limitations. Publish measured cold/warm costs and latency; do not claim unmeasured prices.
-13. SSRF, output-sanitization, secret-handling and local exposure checks pass. Any internet-accessible live deployment has authentication/authorization and server-side quotas first.
-14. At least one reviewer familiar with VC research assesses whether the memo and founder questions are useful. Record review time and required corrections; a target improvement is evaluated against the baseline, not invented. If external review is unavailable, label the release an engineering preview rather than claim professional validation.
-15. Reproducible setup, documented source/license policy, benchmark instructions and a known-limitations section are included. No claim of exhaustive coverage or investment recommendation accuracy.
+### Deterministic metric families (Step 4)
 
-## S. Deliberately deferred analytical capabilities
+Implement small versioned pure functions with Decimal and golden/edge-case tests. Start with revenue/ARR growth, CAGR, gross margin, net burn, runway, burn multiple and Rule of 40; then cohort/retention and acquisition efficiency as explicit definitions permit: NRR, GRR, churn, CAC, LTV, CAC payback and sales efficiency. Add revenue/ARR multiples and EBITDA multiples only when meaningful. Do not generalize SaaS definitions to every business.
 
-The MVP calculation registry initially supports a small set such as comparable-period revenue growth, gross margin and runway when inputs exist. It validates periods/currency/basis and handles invalid inputs. It does not infer cash from funding, ARR from total revenue, or paying customers from logos.
+Each metric records required inputs, definitions, unit/currency, period/cohort/entity, formula version, assumptions, output precision and provenance. Inputs come from cited claims or explicitly analyst-entered assumptions, never hidden model completion. The LLM may propose a metric and interpret results; code controls eligibility/arithmetic.
 
-Later financial modules may add ARR/MRR, CAGR, CAC, LTV, NRR/GRR, churn, Rule of 40, contribution margin, cohort metrics, capital efficiency and sector-specific definitions. Each requires source-linked inputs, deterministic arithmetic, versioned formulas and relevant tests.
+A positive prior revenue is required for ordinary growth; CAGR needs valid endpoints/horizon; runway needs unrestricted cash and a defined burn assumption, not cumulative funding; retention needs a consistent starting cohort; CAC/LTV need aligned acquisition/gross-margin/churn definitions; Rule of 40 names its profitability measure. Invalid denominators, incomparable periods or absent inputs return explanatory unavailability. Missing data also identifies which analyses are blocked and suitable founder questions.
 
-Later market sizing supports top-down reported estimates and bottom-up calculations separately. Prefer bottom-up when reliable customer counts and revenue assumptions exist; expose methodology, geography, base year, inputs, assumptions, formula, range and confidence reasons. SOM needs a time horizon and acquisition/delivery constraints rather than an arbitrary fraction of TAM.
+### Valuation eligibility and methods
 
-Later valuation selects methods by maturity and evidence: comparables with explicit similarity/difference rationale; precedents with reliable terms; ARR/revenue/EBITDA multiples with correct valuation and period definitions; venture scenarios with dilution/ownership/instrument assumptions; DCF only with meaningful cash-flow inputs and deterministic sensitivity analysis. No fabricated inputs to unlock a method.
+Use deterministic prerequisites plus analyst-reviewed methodological reasoning. Output each method as eligible, conditional on explicit assumptions, or unavailable, with reasons and missing inputs. Maturity alone never unlocks a method.
 
-Fund fit later uses structured stage/geography/sector/ticket/traction judgments with evidence. Portfolio overlap is a potential concern, not a confirmed conflict when portfolio coverage is incomplete. Multi-agent voting remains excluded.
+- **Public comps:** economic similarity in customers, revenue model, growth, margins, scale and capital intensity; explain exclusions/differences. Use credible dated data and distinguish EV/equity, historical/forward periods and gross/net revenue. A small manually curated permitted/synthetic demo set is sufficient; a paid market-data universe is not required.
+- **Transactions/funding comps:** use only reliable terms; disclose instrument, rights, date and context. A funding round is not automatically a comparable enterprise value.
+- **Multiples:** show selected range, source/assumption, normalization and EV-to-equity bridge where supported. Do not invent debt/cash or an arbitrary private-company discount.
+- **Scenario/venture returns:** explicit entry/exit basis, dilution, ownership and time horizon. Do not imply common-stock returns capture preferences or instruments not modeled.
+- **DCF:** requires a credible or explicitly hypothetical forecast, consistent unlevered cash flows/discounting, terminal assumption and equity bridge if equity value is shown. Unsupported forecasts do not become facts. Reject invalid perpetual growth/discount combinations; state discounting convention and currency.
+- **Sensitivity:** deterministic recalculation over declared assumptions (e.g. growth/discount rate or metric/multiple). Show ranges and drivers, not a falsely precise target price.
 
-Professional PDF, full call-preparation document layouts, private uploads, richer refresh comparisons and Deep Research ship only after the core evidence and cost gates pass. Existing schemas permit extension; they do not authorize implementation.
+### Market sizing
+
+Support top-down published estimates and bottom-up calculations separately. Prefer bottom-up credible customer universe × annual spend/revenue per customer. SAM restricts serviceable product/geography/regulation. SOM reflects a time horizon and plausible acquisition/delivery capacity. Expose adoption/pricing/spend assumptions, evidence, formula, range, base year and limitations. No arbitrary SOM fraction.
+
+### Memo and review
+
+The memo includes Executive Summary, Company Overview, Team, Product, Business Model, Traction, Market, Competition, Why Now, Financial Analysis, Valuation when appropriate, Risks, Critical Unknowns, Founder Questions and Sources. Financial sections may correctly show unavailable methods. Preserve thesis dependencies, strengthening/weakening evidence and skeptical validation. No automated investment verdict.
 
 ## Source access, security and reproducibility policy
 
@@ -449,34 +307,11 @@ Retrieved content is untrusted data. Tools are allowlisted and read-only except 
 
 Reproducibility means preserving permitted inputs, exact manifests, formula/config versions and recorded outputs. It does not promise bit-for-bit regeneration from a nondeterministic or mutable remote model.
 
-## Repository plan
+## Repository and prior-work policy
 
-```text
-vc-research-copilot/
-  SPEC.md
-  apps/web/
-  backend/
-    src/vc_research/
-      api/  domain/  research/  evidence/  providers/
-      budget/  routing/  freshness/  calculations/  memos/
-      storage/  worker/
-    migrations/
-    tests/
-  schemas/
-  evals/{cases,annotations,adversarial,reports}/
-  examples/demo/
-  docs/{decisions,source-policy,evaluation}/
-  infra/
-  .github/workflows/
-  docker-compose.yml
-  .env.example
-  README.md
-  CONTRIBUTING.md
-  SECURITY.md
-  LICENSE
-```
+Retain the existing repository and Step 1 package, tests, fixtures and inactive `platform/` scaffold. Add only modules needed by the current step. Step 2 will add local storage/runtime/budget modules and migrations; no queue-worker package is required. A focused `apps/web/` UI comes later without deleting the old scaffold as incidental cleanup.
 
-Keep prompts beside their owning modules and version them. Lock dependencies. CI defaults to offline fixtures. Do not restructure or delete the existing scaffold until implementation approval and a concrete migration plan.
+Keep secrets and generated artifacts ignored; version safe examples, migrations, fixture provenance, formula definitions, tests and decision notes. [STEP1_REPORT.md](docs/STEP1_REPORT.md) and the original ADR are historical records; their future-step descriptions are superseded here. [STEP2_PLAN.md](docs/STEP2_PLAN.md) gives the current contract review and exact proposed next step.
 
 ## Research references and reuse decisions
 
@@ -484,7 +319,7 @@ References below come from the architecture research in this conversation on 202
 
 | Reference | Decision |
 |---|---|
-| [LangGraph](https://github.com/langchain-ai/langgraph) | Reuse a small explicit state/checkpoint workflow; avoid a large autonomous agent framework |
+| [LangGraph](https://github.com/langchain-ai/langgraph) | Reference only; plain Python orchestration for the demo, adoption deferred until a measured need |
 | [Open Deep Research](https://github.com/langchain-ai/open_deep_research) | Study bounded planning/research patterns; archived repository, not the maintained application foundation |
 | [GPT Researcher](https://github.com/assafelovic/gpt-researcher) | Study search/report separation and citations; build our own claim validation |
 | [Pydantic AI](https://github.com/pydantic/pydantic-ai) | Study typed task/evaluation interfaces; do not add a second orchestration framework initially |
@@ -499,6 +334,8 @@ References below come from the architecture research in this conversation on 202
 | [Crunchbase](https://data.crunchbase.com/docs/welcome-to-crunchbase-data), [Dealroom](https://docs.dealroom.co/docs/premium-api), [PitchBook](https://pitchbook.com/help/PitchBook-api) | Paid extensions only after explicit access and retention/export review |
 | [CNIL public-data scraping guidance](https://www.cnil.fr/fr/node/165906) | Public accessibility is not blanket permission to collect/reuse personal data |
 
-## Approval boundary
+## Revision map and approval boundary
 
-This document consolidates the scope; it does not authorize feature implementation, deployment, additional services or paid research. On approval, begin at implementation step 1 and proceed through the agreed gates. Do not reopen feature expansion unless a concrete evidence-quality or usability failure requires a scope decision.
+Changed from v1: sections 1–2 (portfolio purpose/scope); A–B (runtime/storage); C–D (fresh company research and fewer roles); G (simpler costs); I (lightweight cache); J (two narratives); K (evaluation scope); L–M (sequence/tests); N–Q (dependencies/measurement); R (demo acceptance); S (finance/valuation promoted); repository policy and LangGraph reuse decision. E–F, task-aware routing in H, and source/security/reproducibility principles remain substantively intact.
+
+This revision and Step 2 plan await user approval. No Step 2 code, migration, service provisioning or live call is authorized by this planning turn. Step 1 is preserved in its approved commit. Do not begin Step 2 until the user approves the revised scope and plan.

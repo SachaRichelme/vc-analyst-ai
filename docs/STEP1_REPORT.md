@@ -5,7 +5,7 @@ Step 1 is complete. Step 2 has not begun. This report describes contracts and sy
 ## A. Git status
 
 - Git was not initialized in the existing project root.
-- Root: `/Users/sacharichelme/Documents/ChatGPT/VC ANALYST AI`.
+- Root: the repository directory containing `README.md` and `backend/`.
 - Branch: `main`.
 - Initial commit: `a634198873ccb43191ea1ac2334756f312f93c95` (`chore: preserve approved specification and safe initial scaffold`).
 - Initial snapshot: 106 files, comprising the existing specification/scaffold plus root README and ignore policy. Node modules, local Site metadata, runtime state and environments were excluded.
@@ -164,7 +164,6 @@ No app server, PostgreSQL instance or financial calculation executor exists at t
 Open the existing repository root in VS Code. Commands for this installed checkout:
 
 ```sh
-cd "/Users/sacharichelme/Documents/ChatGPT/VC ANALYST AI"
 git status --short --branch
 git log --oneline -5
 .venv/bin/python -m pip check
